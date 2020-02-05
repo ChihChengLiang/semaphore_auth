@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "npx buidler compile",
+    "test": "npx buidler test"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,7 @@
     "@nomiclabs/buidler": "^1.1.2",
     "@nomiclabs/buidler-truffle5": "^1.1.2",
     "@nomiclabs/buidler-web3": "^1.1.2",
+    "standard": "^14.3.1",
     "web3": "^1.2.6"
   }
 }
