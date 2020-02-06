@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "download_snarks": "sh ./scripts/downloadSnarks.sh",
+    "build_verifier": "npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/build/verifier.sol",
     "compile": "npx buidler compile",
     "test": "npx buidler test"
   },

@@ -1,15 +1,15 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.15;
 
 import {
     Semaphore
-} from "../../../semaphore/semaphorejs/contracts/Semaphore.sol";
+} from "../semaphore/semaphorejs/contracts/Semaphore.sol";
 
 contract ProofOfBurn {
     Semaphore public semaphore;
 
     event Registered(uint256 _identityCommitment);
 
-    constructor(address _semaphore) {
+    constructor(address _semaphore) public {
         semaphore = Semaphore(_semaphore);
     }
 
