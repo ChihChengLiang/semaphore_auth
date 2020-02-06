@@ -1,0 +1,3 @@
+[submodule "packages/contracts/semaphore"]
+	path = packages/contracts/semaphore
+	url = git@github.com:kobigurk/semaphore.git
