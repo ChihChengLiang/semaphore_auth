@@ -1,5 +1,6 @@
 const bre = require('@nomiclabs/buidler')
-
+const ethers = require('ethers')
+const configs = require('../configs')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
 
 const MIMC_SEED = 'mimcsponge'
@@ -9,7 +10,9 @@ function buildMimcBytecode () {
   return mimcGenContract.createCode(MIMC_SEED, 220)
 }
 
-async function deployContracts () {
+async function deployContracts (_configs = null) {
+  if (_configs === null) _configs = configs
+
   await bre.run('compile')
 
   const MiMC = bre.artifacts.require('MiMC')
@@ -21,11 +24,13 @@ async function deployContracts () {
   const mimcInstance = await MiMC.new()
   await Semaphore.link(mimcInstance)
   const semaphoreInstance = await Semaphore.new(semaphoreTreeDepth, 0, 0)
-  const proofOfBurnInstance = await ProofOfBurn.new(semaphoreInstance.address)
 
-  await semaphoreInstance.transferOwnership(
-    proofOfBurnInstance.address
+  const proofOfBurnInstance = await ProofOfBurn.new(
+    semaphoreInstance.address,
+    ethers.utils.parseEther(configs.REGISTRATION_FEE.toString())
   )
+
+  await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
 
   console.log('MiMC address', mimcInstance.address)
   console.log('Semaphore address', semaphoreInstance.address)
