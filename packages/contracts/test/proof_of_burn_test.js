@@ -2,8 +2,6 @@ const libsemaphore = require('libsemaphore')
 const deploy = require('../scripts/deploy')
 const ethers = require('ethers')
 
-// Traditional Truffle test
-
 describe('ProofOfBurn contract', () => {
   describe('register', () => {
     it('Should emit an event', async () => {
