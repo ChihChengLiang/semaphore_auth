@@ -23,6 +23,10 @@ async function deployContracts () {
   const semaphoreInstance = await Semaphore.new(semaphoreTreeDepth, 0, 0)
   const proofOfBurnInstance = await ProofOfBurn.new(semaphoreInstance.address)
 
+  await semaphoreInstance.transferOwnership(
+    proofOfBurnInstance.address
+  )
+
   console.log('MiMC address', mimcInstance.address)
   console.log('Semaphore address', semaphoreInstance.address)
   console.log('ProofOfBurn address', proofOfBurnInstance.address)
@@ -38,11 +42,15 @@ async function main () {
   await deployContracts()
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+if (require.main === module) {
+  main()
+    .then(() => process.exit(0))
+    .catch(error => {
+      console.error(error)
+      process.exit(1)
+    })
+}
+
+module.exports = {
+  deployContracts
+}
