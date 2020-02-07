@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "download_snarks": "sh ./scripts/downloadSnarks.sh",
-    "build_verifier": "npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/build/verifier.sol",
-    "compile": "npx buidler compile",
-    "test": "npx buidler test"
+    "build_verifier": "rm semaphore/semaphorejs/contracts/verifier.sol && npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/contracts/verifier.sol",
+    "compile": "npx buidler compile --force",
+    "deploy": "node ./scripts/deploy.js",
+    "test": "npx buidler --network localhost test"
   },
   "author": "",
   "license": "ISC",
