@@ -15,7 +15,11 @@
     "@nomiclabs/buidler": "^1.1.2",
     "@nomiclabs/buidler-truffle5": "^1.1.2",
     "@nomiclabs/buidler-web3": "^1.1.2",
+    "ganache": "^6.4.4",
     "standard": "^14.3.1",
     "web3": "^1.2.6"
+  },
+  "dependencies": {
+    "libsemaphore": "^1.0.5"
   }
 }
