@@ -4,7 +4,6 @@ const configs = require('../configs')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
 
 const MIMC_SEED = 'mimcsponge'
-const semaphoreTreeDepth = 12
 
 function buildMimcBytecode () {
   return mimcGenContract.createCode(MIMC_SEED, 220)
@@ -23,7 +22,7 @@ async function deployContracts (_configs = null) {
 
   const mimcInstance = await MiMC.new()
   await Semaphore.link(mimcInstance)
-  const semaphoreInstance = await Semaphore.new(semaphoreTreeDepth, 0, 0)
+  const semaphoreInstance = await Semaphore.new(configs.SEMAPHORE_TREE_DEPTH, 0, 0)
 
   const proofOfBurnInstance = await ProofOfBurn.new(
     semaphoreInstance.address,
