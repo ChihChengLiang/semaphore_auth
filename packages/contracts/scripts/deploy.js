@@ -31,6 +31,7 @@ async function deployContracts (_configs = null) {
   )
 
   await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
+  await proofOfBurnInstance.setExternalNullifier(configs.HOST_NAME)
 
   console.log('MiMC address', mimcInstance.address)
   console.log('Semaphore address', semaphoreInstance.address)

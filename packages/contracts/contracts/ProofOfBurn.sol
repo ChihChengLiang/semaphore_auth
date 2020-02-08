@@ -13,6 +13,13 @@ contract ProofOfBurn {
         registration_fee = _registration_fee;
     }
 
+    // FIXME: This is a owner only function, should make this ownable, or redesign the contructor
+    function setExternalNullifier(string memory _host_name) public {
+        semaphore.addExternalNullifier(
+            uint256(keccak256(abi.encodePacked("ANON", _host_name)))
+        );
+    }
+
     function register(uint256 _identityCommitment) public payable {
         require(
             msg.value == registration_fee,
