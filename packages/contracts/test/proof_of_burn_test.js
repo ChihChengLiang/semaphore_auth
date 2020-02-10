@@ -4,11 +4,19 @@ const ethers = require('ethers')
 const configs = require('../configs')
 const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers')
 const fs = require('fs')
+const snarkjs = require('snarkjs')
+const path = require('path')
 
 const cirDef = require('../semaphore/semaphorejs/build/circuit.json')
 
-const provingKeyPath = '../semaphore/semaphorejs/build/proving_key.bin'
-const verifyingKeyPath = '../semaphore/semaphorejs/build/verification_key.json'
+const provingKeyPath = path.join(
+  __dirname,
+  '../semaphore/semaphorejs/build/proving_key.bin'
+)
+const verifyingKeyPath = path.join(
+  __dirname,
+  '../semaphore/semaphorejs/build/verification_key.json'
+)
 
 describe('ProofOfBurn contract', () => {
   let contracts
@@ -52,11 +60,19 @@ describe('ProofOfBurn contract', () => {
 
       const circuit = libsemaphore.genCircuit(cirDef)
       const leaves = await contracts.ProofOfBurn.getLeaves()
-      const signalHash = ethers.utils.solidityKeccak256(['string'], ['foo'])
-      const externalNullifier = ethers.utils.solidityKeccak256(
-        ['string'],
-        [`ANON${configs.HOST_NAME}`]
+
+      expect(leaves[0].toString()).equal(identityCommitment.toString())
+
+      const signalHash = ethers.utils.solidityKeccak256(['string'], ['foooooo'])
+
+      console.log('signalHash', signalHash)
+      const externalNullifier = libsemaphore.genExternalNullifier(
+        `ANON${configs.HOST_NAME}`
       )
+      console.log('externalNullifier', externalNullifier)
+      expect(await contracts.Semaphore.hasExternalNullifier(externalNullifier))
+        .to.be.true
+
       const result = await libsemaphore.genWitness(
         signalHash,
         circuit,
@@ -66,22 +82,25 @@ describe('ProofOfBurn contract', () => {
         externalNullifier
       )
       const witness = result.witness
-      expect(circuit.checkWitness(witness)).toBeTruthy()
+      expect(circuit.checkWitness(witness)).to.be.true
       const provingKey = fs.readFileSync(provingKeyPath)
       const proof = await libsemaphore.genProof(witness, provingKey)
       const publicSignals = libsemaphore.genPublicSignals(witness, circuit)
+
+      console.log('publicSignals', publicSignals)
+
       const verifyingKey = libsemaphore.parseVerifyingKeyJson(
         fs.readFileSync(verifyingKeyPath).toString()
       )
 
-      expect(
-        libsemaphore.verifyProof(verifyingKey, proof, publicSignals)
-      ).toBeTruthy()
+      expect(libsemaphore.verifyProof(verifyingKey, proof, publicSignals)).to.be
+        .true
       const registrationProof = libsemaphore.formatForVerifierContract(
         proof,
         publicSignals
       )
-      const receipt = await contracts.ProofOfBurn.answerQuestion(
+      console.log('registrationProof.input', registrationProof.input)
+      const receipt = await contracts.ProofOfBurn.login(
         signalHash,
         registrationProof.a,
         registrationProof.b,
