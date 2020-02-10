@@ -63,18 +63,19 @@ describe('ProofOfBurn contract', () => {
 
       expect(leaves[0].toString()).equal(identityCommitment.toString())
 
-      const signalHash = ethers.utils.solidityKeccak256(['string'], ['foooooo'])
+      const signalStr = 'foooooo'
+      const signalToContract = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes(signalStr)
+      )
 
-      console.log('signalHash', signalHash)
       const externalNullifier = libsemaphore.genExternalNullifier(
         `ANON${configs.HOST_NAME}`
       )
-      console.log('externalNullifier', externalNullifier)
       expect(await contracts.Semaphore.hasExternalNullifier(externalNullifier))
         .to.be.true
 
       const result = await libsemaphore.genWitness(
-        signalHash,
+        signalStr,
         circuit,
         identity,
         leaves,
@@ -87,8 +88,6 @@ describe('ProofOfBurn contract', () => {
       const proof = await libsemaphore.genProof(witness, provingKey)
       const publicSignals = libsemaphore.genPublicSignals(witness, circuit)
 
-      console.log('publicSignals', publicSignals)
-
       const verifyingKey = libsemaphore.parseVerifyingKeyJson(
         fs.readFileSync(verifyingKeyPath).toString()
       )
@@ -99,16 +98,15 @@ describe('ProofOfBurn contract', () => {
         proof,
         publicSignals
       )
-      console.log('registrationProof.input', registrationProof.input)
       const receipt = await contracts.ProofOfBurn.login(
-        signalHash,
+        signalToContract,
         registrationProof.a,
         registrationProof.b,
         registrationProof.c,
         registrationProof.input
       )
       expectEvent(receipt, 'Login', {
-        _publicHash: signalHash,
+        _publicHash: signalToContract,
         _hostnameHash: externalNullifier
       })
     })

@@ -10,7 +10,7 @@ contract ProofOfBurn {
     event Registered(uint256 _identityCommitment);
     event Login(
         uint256 indexed _signal_index,
-        bytes32 _publicHash,
+        bytes _publicHash,
         bytes32 _hostnameHash
     );
 
@@ -31,7 +31,7 @@ contract ProofOfBurn {
     }
 
     function login(
-        bytes32 _hashPublic,
+        bytes memory _hashPublic,
         uint256[2] memory a,
         uint256[2][2] memory b,
         uint256[2] memory c,
@@ -43,7 +43,7 @@ contract ProofOfBurn {
         );
         uint256 signalIndex = semaphore.current_signal_index();
 
-        semaphore.broadcastSignal(abi.encode(_hashPublic), a, b, c, input);
+        semaphore.broadcastSignal(_hashPublic, a, b, c, input);
 
         emit Login(signalIndex, _hashPublic, bytes32(input[3]));
     }
