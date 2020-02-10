@@ -22,6 +22,6 @@
     "web3": "^1.2.6"
   },
   "dependencies": {
-    "libsemaphore": "^1.0.5"
+    "libsemaphore": "0.0.17"
   }
 }
