@@ -19,9 +19,11 @@
     "@openzeppelin/test-helpers": "^0.5.4",
     "ganache": "^6.4.4",
     "standard": "^14.3.1",
+    "supertest": "^4.0.2",
     "web3": "^1.2.6"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "libsemaphore": "0.0.17"
   }
 }
