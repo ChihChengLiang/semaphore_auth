@@ -1,10 +1,11 @@
-const libsemaphore = require('libsemaphore')
+const request = require('supertest')
+const app = require('../backend/app')
 const deploy = require('../scripts/deploy')
-const ethers = require('ethers')
 const configs = require('../configs')
-const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers')
 const fs = require('fs')
 const path = require('path')
+const libsemaphore = require('libsemaphore')
+const ethers = require('ethers')
 
 const cirDef = require('../semaphore/semaphorejs/build/circuit.json')
 
@@ -12,45 +13,28 @@ const provingKeyPath = path.join(
   __dirname,
   '../semaphore/semaphorejs/build/proving_key.bin'
 )
+
 const verifyingKeyPath = path.join(
   __dirname,
   '../semaphore/semaphorejs/build/verification_key.json'
 )
-
-describe('ProofOfBurn contract', () => {
+describe('Backend', () => {
   let contracts
+
   beforeEach(async () => {
     contracts = await deploy.deployContracts(configs)
+    app.set('ProofOfBurnAddress', contracts.ProofOfBurn.address)
   })
 
-  describe('register', () => {
-    const identity = libsemaphore.genIdentity()
-    const identityCommitment = libsemaphore.genIdentityCommitment(identity)
-
-    it('Should emit an event', async () => {
-      const receipt = await contracts.ProofOfBurn.register(
-        identityCommitment.toString(),
-        {
-          value: ethers.utils.parseEther(configs.REGISTRATION_FEE.toString())
-        }
-      )
-      expectEvent(receipt, 'Registered', {
-        _identityCommitment: identityCommitment.toString()
-      })
-    })
-
-    it('Should fail when not enough registration fee is sent', async () => {
-      const fee = configs.REGISTRATION_FEE * 0.9
-      await expectRevert(
-        contracts.ProofOfBurn.register(identityCommitment.toString(), {
-          value: ethers.utils.parseEther(fee.toString())
-        }),
-        'Not sending the right amount of ether'
-      )
+  describe('Sanity', () => {
+    it('should hello world', async () => {
+      const res = await request(app).get('/')
+      expect(res.text).equal('Hello World!')
     })
   })
-  describe('login', () => {
-    it('Should login a user', async () => {
+
+  describe('Login', () => {
+    it('should login', async () => {
       const identity = libsemaphore.genIdentity()
       const identityCommitment = libsemaphore.genIdentityCommitment(identity)
       await contracts.ProofOfBurn.register(identityCommitment.toString(), {
@@ -63,9 +47,6 @@ describe('ProofOfBurn contract', () => {
       expect(leaves[0].toString()).equal(identityCommitment.toString())
 
       const signalStr = 'foooooo'
-      const signalToContract = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes(signalStr)
-      )
 
       const externalNullifier = libsemaphore.genExternalNullifier(
         `ANON${configs.HOST_NAME}`
@@ -93,21 +74,23 @@ describe('ProofOfBurn contract', () => {
 
       expect(libsemaphore.verifyProof(verifyingKey, proof, publicSignals)).to.be
         .true
-      const registrationProof = libsemaphore.formatForVerifierContract(
-        proof,
-        publicSignals
+
+      const stringfiedProof = JSON.stringify(
+        libsemaphore.stringifyBigInts(proof)
       )
-      const receipt = await contracts.ProofOfBurn.login(
-        signalToContract,
-        registrationProof.a,
-        registrationProof.b,
-        registrationProof.c,
-        registrationProof.input
+      const stringfiedPublicSignals = JSON.stringify(
+        libsemaphore.stringifyBigInts(publicSignals)
       )
-      expectEvent(receipt, 'Login', {
-        _publicHash: signalToContract,
-        _hostnameHash: externalNullifier
-      })
+
+      await request(app)
+        .post('/login')
+        .send({
+          proof: stringfiedProof,
+          publicSignals: stringfiedPublicSignals
+        })
+        .set('Accept', 'application/json')
+        .expect(200)
+        .then(res => expect(res.body.login).equal('OK'))
     })
   })
 })
