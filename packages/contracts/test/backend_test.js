@@ -24,13 +24,7 @@ describe('Backend', () => {
   beforeEach(async () => {
     contracts = await deploy.deployContracts(configs)
     app.set('ProofOfBurnAddress', contracts.ProofOfBurn.address)
-  })
-
-  describe('Sanity', () => {
-    it('should hello world', async () => {
-      const res = await request(app).get('/')
-      expect(res.text).equal('Hello World!')
-    })
+    app.set('SemaphoreAddress', contracts.Semaphore.address)
   })
 
   describe('Login', () => {
