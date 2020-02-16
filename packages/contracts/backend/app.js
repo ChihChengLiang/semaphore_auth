@@ -5,6 +5,47 @@ const libsemaphore = require('libsemaphore')
 const path = require('path')
 const fs = require('fs')
 const snarkjs = require('snarkjs')
+const { Model } = require('objection')
+
+const knex = require('knex')({
+  client: 'sqlite3',
+  connection: {
+    filename: './mydb.sqlite'
+  }
+})
+
+Model.knex(knex)
+
+class Posts extends Model {
+  static get tableName () {
+    return 'posts'
+  }
+}
+
+async function createSchema () {
+  if (await knex.schema.hasTable('posts')) {
+    return
+  }
+
+  await knex.schema.createTable('posts', table => {
+    table.increments('id').primary()
+    table.string('postBody')
+
+    table.string('proof')
+
+    table.string('root')
+    table.string('nullifierHash')
+    table.string('signalHash')
+    table.string('externalNullifier')
+
+    table
+      .dateTime('createdAt')
+      .notNullable()
+      .defaultTo(knex.fn.now())
+  })
+}
+
+createSchema()
 
 const verifyingKeyPath = path.join(
   __dirname,
@@ -37,12 +78,7 @@ function getContracts () {
   }
 }
 
-async function validateProof (proof, publicSignals) {
-  const [root, nullifierHash, signalHash, externalNullifier] = publicSignals
-  const contracts = getContracts()
-  // hasNullifier
-
-  // hasExternalNullifier(input[3])
+function validateExternalNullifier (externalNullifier) {
   const legitExternalNullifier = snarkjs.bigInt(
     libsemaphore.genExternalNullifier('ANONlocalhost')
   )
@@ -51,35 +87,62 @@ async function validateProof (proof, publicSignals) {
       `Illegal externalNullifier: expect ${legitExternalNullifier}, got ${externalNullifier}`
     )
   }
+}
 
-  // isInRootHistory(input[0])
-  const isInRootHistory = await contracts.Semaphore.isInRootHistory(root.toString())
+function validateSignalHash () {}
+function validateNullifierNotSeen () {}
+async function validateInRootHistory (root) {
+  const contracts = getContracts()
+  const isInRootHistory = await contracts.Semaphore.isInRootHistory(
+    root.toString()
+  )
   if (!isInRootHistory) throw Error('Root not in history')
+}
 
-  // verifyProof(a, b, c, input)
+async function validateProof (proof, publicSignals) {
   const verifyingKey = libsemaphore.parseVerifyingKeyJson(
     fs.readFileSync(verifyingKeyPath).toString()
   )
   const isValid = libsemaphore.verifyProof(verifyingKey, proof, publicSignals)
   if (!isValid) throw Error('Invalid Proof')
-
-  // Record the post and the proof
 }
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', async (req, res) => {
+  const posts = await Posts.query().orderBy('id')
+  res.json({ posts })
+})
 
-app.post('/login', async (req, res) => {
-  const parsedProof = libsemaphore.unstringifyBigInts(
-    JSON.parse(req.body.proof)
-  )
+app.post('/post', async (req, res) => {
+  const rawProof = req.body.proof
+  const parsedProof = libsemaphore.unstringifyBigInts(JSON.parse(rawProof))
   const parsedPublicSignals = libsemaphore.unstringifyBigInts(
     JSON.parse(req.body.publicSignals)
   )
+  const [
+    root,
+    nullifierHash,
+    signalHash,
+    externalNullifier
+  ] = parsedPublicSignals
+
+  validateExternalNullifier(externalNullifier)
+  validateSignalHash(signalHash)
+  await validateInRootHistory(root)
+  validateNullifierNotSeen(nullifierHash)
   await validateProof(parsedProof, parsedPublicSignals)
-  res.send({ login: 'OK' })
+
+  await Posts.query().insert({
+    postBody: req.body.postBody,
+    proof: rawProof,
+    root,
+    nullifierHash,
+    signalHash,
+    externalNullifier
+  })
+  res.send('OK')
 })
 
 module.exports = app

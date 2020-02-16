@@ -27,8 +27,8 @@ describe('Backend', () => {
     app.set('SemaphoreAddress', contracts.Semaphore.address)
   })
 
-  describe('Login', () => {
-    it('should login', async () => {
+  describe('Post', () => {
+    it('should post a new post', async () => {
       const identity = libsemaphore.genIdentity()
       const identityCommitment = libsemaphore.genIdentityCommitment(identity)
       await contracts.ProofOfBurn.register(identityCommitment.toString(), {
@@ -77,14 +77,20 @@ describe('Backend', () => {
       )
 
       await request(app)
-        .post('/login')
+        .post('/post')
         .send({
+          postBody: 'foooooo',
           proof: stringfiedProof,
           publicSignals: stringfiedPublicSignals
         })
         .set('Accept', 'application/json')
         .expect(200)
-        .then(res => expect(res.body.login).equal('OK'))
+        .then(res => expect(res.text).equal('OK'))
+
+      await request(app)
+        .get('/')
+        .expect(200)
+        .then(res => expect(res.body.posts[0].postBody).equal('foooooo'))
     })
   })
 })
