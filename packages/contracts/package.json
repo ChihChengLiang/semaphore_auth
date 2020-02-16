@@ -24,6 +24,9 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "libsemaphore": "0.0.17"
+    "knex": "^0.20.9",
+    "libsemaphore": "0.0.17",
+    "objection": "^2.1.2",
+    "sqlite3": "^4.1.1"
   }
 }
