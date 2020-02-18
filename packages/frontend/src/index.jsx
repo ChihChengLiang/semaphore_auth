@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
+import Nav from './nav'
 
 const post = {
   content:
@@ -24,12 +25,10 @@ const Post = props => {
 }
 
 const App = () => {
-  const p = posts.map((post, index) => {
-    ;<p>{post.content}</p>
-  })
   return (
     <div className='section'>
       <div className='container'>
+          <Nav/>
         <h1>Foooo</h1>
         <Posts posts={posts} />
       </div>
