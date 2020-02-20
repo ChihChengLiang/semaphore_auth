@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import Nav from './nav'
+import { initStorage } from './storage'
+import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core'
 
 const post = {
   content:
@@ -10,7 +12,9 @@ const post = {
 const posts = [post, post, post, post, post]
 
 const Posts = props => {
-  const posts = props.posts.map(post => <Post post={post} />)
+  const posts = props.posts.map((post, index) => (
+    <Post key={index} post={post} />
+  ))
   return <div>{posts}</div>
 }
 
@@ -23,16 +27,34 @@ const Post = props => {
     </div>
   )
 }
+const Identity = props => {
+  const web3ReactContext = getWeb3ReactContext()
+
+  return (
+    <>
+      <h1>Identity</h1>
+      <web3ReactContext.Consumer>
+        {conext => {
+          console.log(conext)
+          return <p>{conext.account}</p>
+        }}
+      </web3ReactContext.Consumer>
+    </>
+  )
+}
 
 const App = () => {
+  initStorage()
   return (
-    <div className='section'>
-      <div className='container'>
-          <Nav/>
-        <h1>Foooo</h1>
-        <Posts posts={posts} />
+    <Web3ReactProvider libraryName='ethers.js'>
+      <div className='section'>
+        <div className='container'>
+          <h1>Foooo</h1>
+          <Identity />
+          <Posts posts={posts} />
+        </div>
       </div>
-    </div>
+    </Web3ReactProvider>
   )
 }
 
