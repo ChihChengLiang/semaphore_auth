@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "@web3-react/core": "^6.0.7",
-    "@web3-react/injected-connector": "^6.0.7",
     "bulma": "^0.8.0",
-    "libsemaphore": "^1.0.5",
+    "libsemaphore": "0.0.17",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "web3-react": "^5.0.5"
   }
 }

@@ -1,9 +1,14 @@
 import React from 'react'
+import { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import Nav from './nav'
 import { initStorage } from './storage'
-import { Web3ReactProvider, getWeb3ReactContext } from '@web3-react/core'
+import Web3Provider from 'web3-react'
+import { Connectors, useWeb3Context } from 'web3-react'
+const { InjectedConnector } = Connectors
+
+const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
 
 const post = {
   content:
@@ -27,26 +32,47 @@ const Post = props => {
     </div>
   )
 }
-const Identity = props => {
-  const web3ReactContext = getWeb3ReactContext()
+const Identity = () => {
+  return <h1>Identity</h1>
+}
+const Account = () => {
+  const context = useWeb3Context()
 
-  return (
-    <>
-      <h1>Identity</h1>
-      <web3ReactContext.Consumer>
+  return <p>{context.account}</p>
+}
+
+const Activation = () => {
+  const context = useWeb3Context()
+  useEffect(() => {
+    context.setFirstValidConnector(['MetaMask'])
+  }, [])
+
+  if (!context.active && !context.error) {
+    // loading
+    return <p>Loading</p>
+  } else if (context.error) {
+    //error
+    return <p>Error {context.error}</p>
+  } else {
+    // success
+    return (
+      <>
+        <h1>Loading sucess</h1>
         {conext => {
           console.log(conext)
           return <p>{conext.account}</p>
         }}
-      </web3ReactContext.Consumer>
-    </>
-  )
+      </>
+    )
+  }
 }
 
 const App = () => {
   initStorage()
   return (
-    <Web3ReactProvider libraryName='ethers.js'>
+    <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'>
+      <Activation />
+      <Account />
       <div className='section'>
         <div className='container'>
           <h1>Foooo</h1>
@@ -54,7 +80,7 @@ const App = () => {
           <Posts posts={posts} />
         </div>
       </div>
-    </Web3ReactProvider>
+    </Web3Provider>
   )
 }
 
