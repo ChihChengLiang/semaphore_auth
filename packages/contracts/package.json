@@ -7,7 +7,7 @@
     "download_snarks": "sh ./scripts/downloadSnarks.sh",
     "build_verifier": "rm semaphore/semaphorejs/contracts/verifier.sol && npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/contracts/verifier.sol",
     "compile": "npx buidler compile --force && npm run copyABIs",
-    "deploy": "node ./scripts/deploy.js",
+    "deploy": "node ./scripts/deploy.js --verbose",
     "test": "npx buidler --network localhost test",
     "copyABIs": "node ./scripts/copyABIs.js"
   },

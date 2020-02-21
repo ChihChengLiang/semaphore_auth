@@ -10,11 +10,10 @@ function buildMimcBytecode () {
   return mimcGenContract.createCode(MIMC_SEED, 220)
 }
 
-async function deployContracts (
-  _configs = configs,
+async function deployContracts ({
   compile = false,
   verbose = false
-) {
+} = {}) {
   if (compile) {
     await bre.run('compile')
   }
@@ -46,8 +45,8 @@ async function deployContracts (
 
   if (verbose) {
     console.log('MiMC address', mimcInstance.address)
-    console.log('Semaphore address', semaphoreInstance.address)
-    console.log('ProofOfBurn address', proofOfBurnInstance.address)
+    console.log(`export SEMAPHORE_ADDRESS=${semaphoreInstance.address}`)
+    console.log(`export PROOF_OF_BURN_ADDRESS=${proofOfBurnInstance.address}`)
   }
 
   return {
@@ -58,7 +57,8 @@ async function deployContracts (
 }
 
 async function main () {
-  await deployContracts()
+  const verbose = process.argv.includes('--verbose')
+  await deployContracts({ verbose })
 }
 
 if (require.main === module) {
