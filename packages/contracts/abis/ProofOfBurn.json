@@ -1,0 +1,152 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_semaphore",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_registration_fee",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_signal_index",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_publicHash",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "_hostnameHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "Login",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_identityCommitment",
+        "type": "uint256"
+      }
+    ],
+    "name": "Registered",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getLeaves",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_hashPublic",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "a",
+        "type": "uint256[2]"
+      },
+      {
+        "internalType": "uint256[2][2]",
+        "name": "b",
+        "type": "uint256[2][2]"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "c",
+        "type": "uint256[2]"
+      },
+      {
+        "internalType": "uint256[4]",
+        "name": "input",
+        "type": "uint256[4]"
+      }
+    ],
+    "name": "login",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_identityCommitment",
+        "type": "uint256"
+      }
+    ],
+    "name": "register",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "registration_fee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "semaphore",
+    "outputs": [
+      {
+        "internalType": "contract Semaphore",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
