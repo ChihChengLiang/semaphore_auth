@@ -1,12 +1,13 @@
 import React from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import Nav from './nav'
-import { initStorage } from './storage'
+import { initStorage, hasId, retrieveId, storeId } from './storage'
 import Web3Provider from 'web3-react'
 import { Connectors, useWeb3Context } from 'web3-react'
 const { InjectedConnector } = Connectors
+import { genIdentity, serialiseIdentity } from 'libsemaphore'
 
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
 
@@ -32,8 +33,36 @@ const Post = props => {
     </div>
   )
 }
-const Identity = () => {
-  return <h1>Identity</h1>
+
+const Identity = props => {
+  return (
+    <>
+      <p>pubkey: {props.identity.keypair.pubKey.map(x=>x.toString())}</p>
+      <p>privatekey: {props.identity.keypair.privKey}</p>
+      <p>identityNullifier: {props.identity.identityNullifier.toString()}</p>
+      <p>identityTrapdoor: {props.identity.identityTrapdoor.toString()}</p>
+    </>
+  )
+}
+
+const IdentityManagement = () => {
+  const [idExists, setIdExists] = useState(hasId())
+  function createIdentity () {
+    const identity = genIdentity()
+    storeId(identity)
+    setIdExists(true)
+  }
+
+  return (
+    <>
+      <h1>Identity</h1>
+      {idExists ? (
+        <Identity identity={retrieveId()} />
+      ) : (
+        <button onClick={createIdentity}>Generate Identity</button>
+      )}
+    </>
+  )
 }
 const Account = () => {
   const context = useWeb3Context()
@@ -76,7 +105,7 @@ const App = () => {
       <div className='section'>
         <div className='container'>
           <h1>Foooo</h1>
-          <Identity />
+          <IdentityManagement />
           <Posts posts={posts} />
         </div>
       </div>
