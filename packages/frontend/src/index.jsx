@@ -7,7 +7,9 @@ import { initStorage, hasId, retrieveId, storeId } from './storage'
 import Web3Provider from 'web3-react'
 import { Connectors, useWeb3Context } from 'web3-react'
 const { InjectedConnector } = Connectors
-import { genIdentity, serialiseIdentity } from 'libsemaphore'
+import { genIdentity, genIdentityCommitment } from 'libsemaphore'
+
+import getContracts from './web3/getContracts'
 
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
 
@@ -37,7 +39,7 @@ const Post = props => {
 const Identity = props => {
   return (
     <>
-      <p>pubkey: {props.identity.keypair.pubKey.map(x=>x.toString())}</p>
+      <p>pubkey: {props.identity.keypair.pubKey.map(x => x.toString())}</p>
       <p>privatekey: {props.identity.keypair.privKey}</p>
       <p>identityNullifier: {props.identity.identityNullifier.toString()}</p>
       <p>identityTrapdoor: {props.identity.identityTrapdoor.toString()}</p>
@@ -64,6 +66,13 @@ const IdentityManagement = () => {
     </>
   )
 }
+
+const IdentityCommitment = () => {
+  const context = useWeb3Context()
+  console.log(getContracts(context.library.provider))
+  return <p>Identity Commitment</p>
+}
+
 const Account = () => {
   const context = useWeb3Context()
 
@@ -91,6 +100,7 @@ const Activation = () => {
           console.log(conext)
           return <p>{conext.account}</p>
         }}
+        <IdentityCommitment />
       </>
     )
   }
@@ -106,6 +116,7 @@ const App = () => {
         <div className='container'>
           <h1>Foooo</h1>
           <IdentityManagement />
+
           <Posts posts={posts} />
         </div>
       </div>
