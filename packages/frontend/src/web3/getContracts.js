@@ -7,17 +7,14 @@ function getContracts (_provider) {
   const provider = new ethers.providers.Web3Provider(_provider)
   console.log('PROOF_OF_BURN_ADDRESS', PROOF_OF_BURN_ADDRESS)
   console.log('SEMAPHORE_ADDRESS', SEMAPHORE_ADDRESS)
+  const signer = provider.getSigner()
 
   const ProofOfBurn = new ethers.Contract(
     PROOF_OF_BURN_ADDRESS,
     ProofOfBurnABI,
-    provider
+    signer
   )
-  const Semaphore = new ethers.Contract(
-    SEMAPHORE_ADDRESS,
-    SemaphoreABI,
-    provider
-  )
+  const Semaphore = new ethers.Contract(SEMAPHORE_ADDRESS, SemaphoreABI, signer)
   return {
     ProofOfBurn,
     Semaphore

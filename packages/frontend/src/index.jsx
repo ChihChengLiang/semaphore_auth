@@ -9,7 +9,7 @@ import { Connectors, useWeb3Context } from 'web3-react'
 const { InjectedConnector } = Connectors
 import { genIdentity, genIdentityCommitment } from 'libsemaphore'
 
-import getContracts from './web3/getContracts'
+import register from './web3/registration'
 
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
 
@@ -69,8 +69,17 @@ const IdentityManagement = () => {
 
 const IdentityCommitment = () => {
   const context = useWeb3Context()
-  console.log(getContracts(context.library.provider))
-  return <p>Identity Commitment</p>
+  const _register = async () => {
+    const identityCommitment = genIdentityCommitment(retrieveId())
+    await register(context, identityCommitment)
+  }
+
+  return (
+    <>
+      <p>Identity Commitment</p>
+      <button onClick={_register}>Register</button>
+    </>
+  )
 }
 
 const Account = () => {
@@ -90,14 +99,13 @@ const Activation = () => {
     return <p>Loading</p>
   } else if (context.error) {
     //error
-    return <p>Error {context.error}</p>
+    return <p>Error {context.error.toString()}</p>
   } else {
     // success
     return (
       <>
         <h1>Loading sucess</h1>
         {conext => {
-          console.log(conext)
           return <p>{conext.account}</p>
         }}
         <IdentityCommitment />
