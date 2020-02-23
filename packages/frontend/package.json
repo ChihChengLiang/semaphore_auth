@@ -1,0 +1,30 @@
+{
+  "name": "frontend",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "parcel build index.html",
+    "start": "parcel serve index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "alias": {
+    "worker_threads": "./externals/worker_threads.js"
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "@web3-react/core": "^6.0.7",
+    "bulma": "^0.8.0",
+    "dotenv": "^8.2.0",
+    "libsemaphore": "0.0.17",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "semaphore-auth-contracts": "file:../contracts",
+    "web3-react": "^5.0.5"
+  }
+}
