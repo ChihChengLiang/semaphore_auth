@@ -11,6 +11,15 @@ const Post = props => {
   )
 }
 
+const NewPost = () => {
+  return (
+    <>
+      <textarea></textarea>
+      <button>Create New Post</button>
+    </>
+  )
+}
+
 class Posts extends Component {
   constructor (props) {
     super(props)
@@ -58,4 +67,13 @@ class Posts extends Component {
   }
 }
 
-export default Posts
+const PostPage = () => {
+  return (
+    <>
+      <NewPost />
+      <Posts />
+    </>
+  )
+}
+
+export default PostPage

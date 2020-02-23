@@ -8,7 +8,7 @@ import Web3Provider from 'web3-react'
 
 import { Activation, MetaMask } from './web3'
 
-import Posts from './pages/posts'
+import PostPage from './pages/posts'
 import { IdentityCommitment, IdentityManagement } from './pages/identity'
 
 const App = () => {
@@ -20,7 +20,7 @@ const App = () => {
       <div className='section'>
         <div className='container'>
           <IdentityManagement />
-          <Posts />
+          <PostPage />
         </div>
       </div>
     </Web3Provider>
