@@ -5,7 +5,7 @@ const libsemaphore = require('libsemaphore')
 const fs = require('fs')
 const snarkjs = require('snarkjs')
 const { Model } = require('objection')
-const { VERIFYING_KEY_PATH } = require('../configs')
+const { VERIFYING_KEY_PATH } = require('../constants')
 
 const knex = require('knex')({
   client: 'sqlite3',

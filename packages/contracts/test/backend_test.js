@@ -7,7 +7,7 @@ const {
   CIRCUIT_CACHE_PATH,
   PROVING_KEY_CACHE_PATH,
   VERIFYING_KEY_PATH
-} = require('../configs')
+} = require('../constants')
 const fs = require('fs')
 const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')

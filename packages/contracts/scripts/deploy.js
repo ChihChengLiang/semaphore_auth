@@ -4,7 +4,7 @@ const {
   REGISTRATION_FEE,
   SEMAPHORE_TREE_DEPTH,
   MIMC_SEED
-} = require('../configs')
+} = require('../constants')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
 
 function buildMimcBytecode () {

@@ -1,7 +1,7 @@
 const libsemaphore = require('libsemaphore')
 const deploy = require('../scripts/deploy')
 const ethers = require('ethers')
-const { REGISTRATION_FEE } = require('../configs')
+const { REGISTRATION_FEE } = require('../constants')
 const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers')
 
 describe('ProofOfBurn contract', () => {
