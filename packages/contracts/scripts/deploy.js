@@ -1,19 +1,21 @@
 const bre = require('@nomiclabs/buidler')
 const ethers = require('ethers')
-const configs = require('../configs')
+const {
+  REGISTRATION_FEE,
+  SEMAPHORE_TREE_DEPTH,
+  MIMC_SEED
+} = require('../configs')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
-const libsemaphore = require('libsemaphore')
-
-const MIMC_SEED = 'mimcsponge'
 
 function buildMimcBytecode () {
   return mimcGenContract.createCode(MIMC_SEED, 220)
 }
 
 async function deployContracts ({
+  registrationFee = REGISTRATION_FEE,
   compile = false,
   verbose = false
-} = {}) {
+}) {
   if (compile) {
     await bre.run('compile')
   }
@@ -27,18 +29,11 @@ async function deployContracts ({
   const mimcInstance = await MiMC.new()
   await Semaphore.link(mimcInstance)
 
-  const firstExternalNullifier = libsemaphore.genExternalNullifier(
-    `ANON${configs.HOST_NAME}`
-  )
-  const semaphoreInstance = await Semaphore.new(
-    configs.SEMAPHORE_TREE_DEPTH,
-    0,
-    firstExternalNullifier
-  )
+  const semaphoreInstance = await Semaphore.new(SEMAPHORE_TREE_DEPTH, 0, 0)
 
   const proofOfBurnInstance = await ProofOfBurn.new(
     semaphoreInstance.address,
-    ethers.utils.parseEther(configs.REGISTRATION_FEE.toString())
+    ethers.utils.parseEther(registrationFee.toString())
   )
 
   await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
