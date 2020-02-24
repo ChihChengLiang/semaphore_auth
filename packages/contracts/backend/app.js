@@ -2,10 +2,10 @@ const express = require('express')
 const app = express()
 const ethers = require('ethers')
 const libsemaphore = require('libsemaphore')
-const path = require('path')
 const fs = require('fs')
 const snarkjs = require('snarkjs')
 const { Model } = require('objection')
+const { VERIFYING_KEY_PATH } = require('../constants')
 
 const knex = require('knex')({
   client: 'sqlite3',
@@ -46,11 +46,6 @@ async function createSchema () {
 }
 
 createSchema()
-
-const verifyingKeyPath = path.join(
-  __dirname,
-  '../semaphore/semaphorejs/build/verification_key.json'
-)
 
 function getContracts () {
   const proofOfBurnAddress = app.get('ProofOfBurnAddress')
@@ -101,7 +96,7 @@ async function validateInRootHistory (root) {
 
 async function validateProof (proof, publicSignals) {
   const verifyingKey = libsemaphore.parseVerifyingKeyJson(
-    fs.readFileSync(verifyingKeyPath).toString()
+    fs.readFileSync(VERIFYING_KEY_PATH).toString()
   )
   const isValid = libsemaphore.verifyProof(verifyingKey, proof, publicSignals)
   if (!isValid) throw Error('Invalid Proof')

@@ -1,13 +1,16 @@
 const libsemaphore = require('libsemaphore')
 const deploy = require('../scripts/deploy')
 const ethers = require('ethers')
-const configs = require('../configs')
+const { REGISTRATION_FEE } = require('../constants')
 const { expectEvent, expectRevert } = require('@openzeppelin/test-helpers')
 
 describe('ProofOfBurn contract', () => {
   let contracts
+  const registrationFee = REGISTRATION_FEE
   beforeEach(async () => {
-    contracts = await deploy.deployContracts(configs)
+    contracts = await deploy.deployContracts({
+      registrationFee
+    })
   })
 
   describe('register', () => {
@@ -18,7 +21,7 @@ describe('ProofOfBurn contract', () => {
       const receipt = await contracts.ProofOfBurn.register(
         identityCommitment.toString(),
         {
-          value: ethers.utils.parseEther(configs.REGISTRATION_FEE.toString())
+          value: ethers.utils.parseEther(registrationFee.toString())
         }
       )
       expectEvent(receipt, 'Registered', {
@@ -27,7 +30,7 @@ describe('ProofOfBurn contract', () => {
     })
 
     it('Should fail when not enough registration fee is sent', async () => {
-      const fee = configs.REGISTRATION_FEE * 0.9
+      const fee = registrationFee * 0.9
       await expectRevert(
         contracts.ProofOfBurn.register(identityCommitment.toString(), {
           value: ethers.utils.parseEther(fee.toString())

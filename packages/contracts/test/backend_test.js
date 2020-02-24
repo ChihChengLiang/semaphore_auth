@@ -1,28 +1,23 @@
 const request = require('supertest')
 const app = require('../backend/app')
 const deploy = require('../scripts/deploy')
-const configs = require('../configs')
+const {
+  REGISTRATION_FEE,
+  SEMAPHORE_TREE_DEPTH,
+  CIRCUIT_CACHE_PATH,
+  PROVING_KEY_CACHE_PATH,
+  VERIFYING_KEY_PATH
+} = require('../constants')
 const fs = require('fs')
-const path = require('path')
 const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')
 
-const cirDef = require('../semaphore/semaphorejs/build/circuit.json')
-
-const provingKeyPath = path.join(
-  __dirname,
-  '../semaphore/semaphorejs/build/proving_key.bin'
-)
-
-const verifyingKeyPath = path.join(
-  __dirname,
-  '../semaphore/semaphorejs/build/verification_key.json'
-)
 describe('Backend', () => {
   let contracts
+  const registrationFee = REGISTRATION_FEE
 
   beforeEach(async () => {
-    contracts = await deploy.deployContracts(configs)
+    contracts = await deploy.deployContracts({ registrationFee })
     app.set('ProofOfBurnAddress', contracts.ProofOfBurn.address)
     app.set('SemaphoreAddress', contracts.Semaphore.address)
   })
@@ -32,8 +27,10 @@ describe('Backend', () => {
       const identity = libsemaphore.genIdentity()
       const identityCommitment = libsemaphore.genIdentityCommitment(identity)
       await contracts.ProofOfBurn.register(identityCommitment.toString(), {
-        value: ethers.utils.parseEther(configs.REGISTRATION_FEE.toString())
+        value: ethers.utils.parseEther(registrationFee.toString())
       })
+
+      const cirDef = require(CIRCUIT_CACHE_PATH)
 
       const circuit = libsemaphore.genCircuit(cirDef)
       const leaves = await contracts.ProofOfBurn.getLeaves()
@@ -43,27 +40,26 @@ describe('Backend', () => {
       const signalStr = 'foooooo'
 
       const externalNullifier = libsemaphore.genExternalNullifier(
-        `ANON${configs.HOST_NAME}`
+        'ANONlocalhost'
       )
-      expect(await contracts.Semaphore.hasExternalNullifier(externalNullifier))
-        .to.be.true
 
-      const result = await libsemaphore.genWitness(
+      const { witness } = await libsemaphore.genWitness(
         signalStr,
         circuit,
         identity,
         leaves,
-        configs.SEMAPHORE_TREE_DEPTH,
+        SEMAPHORE_TREE_DEPTH,
         externalNullifier
       )
-      const witness = result.witness
       expect(circuit.checkWitness(witness)).to.be.true
-      const provingKey = fs.readFileSync(provingKeyPath)
+
+      const provingKey = fs.readFileSync(PROVING_KEY_CACHE_PATH)
+
       const proof = await libsemaphore.genProof(witness, provingKey)
       const publicSignals = libsemaphore.genPublicSignals(witness, circuit)
 
       const verifyingKey = libsemaphore.parseVerifyingKeyJson(
-        fs.readFileSync(verifyingKeyPath).toString()
+        fs.readFileSync(VERIFYING_KEY_PATH).toString()
       )
 
       expect(libsemaphore.verifyProof(verifyingKey, proof, publicSignals)).to.be
@@ -91,6 +87,6 @@ describe('Backend', () => {
         .get('/')
         .expect(200)
         .then(res => expect(res.body.posts[0].postBody).equal('foooooo'))
-    })
+    }).timeout(25000)
   })
 })
