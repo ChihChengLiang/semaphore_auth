@@ -1,5 +1,5 @@
 const request = require('supertest')
-const app = require('../backend/app')
+const app = require('semaphore-auth-backend/src/app')
 const deploy = require('../scripts/deploy')
 const {
   REGISTRATION_FEE,

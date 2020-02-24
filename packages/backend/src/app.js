@@ -5,7 +5,8 @@ const libsemaphore = require('libsemaphore')
 const fs = require('fs')
 const snarkjs = require('snarkjs')
 const { Model } = require('objection')
-const { VERIFYING_KEY_PATH } = require('../constants')
+const { VERIFYING_KEY_PATH } = require('semaphore-auth-contracts/constants')
+const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
 
 const knex = require('knex')({
   client: 'sqlite3',
@@ -47,32 +48,6 @@ async function createSchema () {
 
 createSchema()
 
-function getContracts () {
-  const proofOfBurnAddress = app.get('ProofOfBurnAddress')
-  if (proofOfBurnAddress === undefined)
-    throw Error('Must configure ProofOfBurnAddress')
-  const semaphoreAddress = app.get('SemaphoreAddress')
-  if (semaphoreAddress === undefined)
-    throw Error('Must configure SemaphoreAddress')
-  const proofOfBurnAbi = require('../artifacts/ProofOfBurn.json').abi
-  const semaphoreAbi = require('../artifacts/Semaphore.json').abi
-  const provider = new ethers.providers.JsonRpcProvider()
-  const proofOfBurnContract = new ethers.Contract(
-    proofOfBurnAddress,
-    proofOfBurnAbi,
-    provider
-  )
-  const semaphoreContract = new ethers.Contract(
-    semaphoreAddress,
-    semaphoreAbi,
-    provider
-  )
-  return {
-    ProofOfBurn: proofOfBurnContract,
-    Semaphore: semaphoreContract
-  }
-}
-
 function validateExternalNullifier (externalNullifier) {
   const legitExternalNullifier = snarkjs.bigInt(
     libsemaphore.genExternalNullifier('ANONlocalhost')
@@ -87,10 +62,10 @@ function validateExternalNullifier (externalNullifier) {
 function validateSignalHash () {}
 function validateNullifierNotSeen () {}
 async function validateInRootHistory (root) {
-  const contracts = getContracts()
-  const isInRootHistory = await contracts.Semaphore.isInRootHistory(
-    root.toString()
-  )
+  const provider = new ethers.providers.JsonRpcProvider()
+  const semaphore = semaphoreContract(provider, app.get('SemaphoreAddress'))
+
+  const isInRootHistory = await semaphore.isInRootHistory(root.toString())
   if (!isInRootHistory) throw Error('Root not in history')
 }
 

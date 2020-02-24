@@ -20,15 +20,12 @@
     "@openzeppelin/test-helpers": "^0.5.4",
     "ganache": "^6.4.4",
     "ganache-cli": "^6.9.1",
+    "semaphore-auth-backend": "../backend/",
     "standard": "^14.3.1",
     "supertest": "^4.0.2",
     "web3": "^1.2.6"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "knex": "^0.20.9",
-    "libsemaphore": "0.0.17",
-    "objection": "^2.1.2",
-    "sqlite3": "^4.1.1"
+    "libsemaphore": "0.0.17"
   }
 }
