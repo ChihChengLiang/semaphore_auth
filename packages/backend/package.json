@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava --timeout=1m"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +16,10 @@
     "objection": "^2.1.3",
     "semaphore-auth-contracts": "file:../contracts",
     "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "ava": "^3.4.0",
+    "supertest": "^4.0.2",
+    "yarn": "^1.22.0"
   }
 }
