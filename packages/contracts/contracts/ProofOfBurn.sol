@@ -1,7 +1,6 @@
 pragma solidity ^0.5.15;
 
 import {Semaphore} from "../semaphore/semaphorejs/contracts/Semaphore.sol";
-import "@nomiclabs/buidler/console.sol";
 
 contract ProofOfBurn {
     Semaphore public semaphore;
