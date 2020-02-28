@@ -1,0 +1,1 @@
+const { compileContracts } = require('./compile')

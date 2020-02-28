@@ -1,40 +1,69 @@
-const bre = require('@nomiclabs/buidler')
+const { compileContracts } = require('../lib/compile')
 const ethers = require('ethers')
 const {
   REGISTRATION_FEE,
   SEMAPHORE_TREE_DEPTH,
   MIMC_SEED
 } = require('../constants')
+
+const linker = require('solc/linker')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
 
 function buildMimcBytecode () {
   return mimcGenContract.createCode(MIMC_SEED, 220)
 }
 
+const linkBytecode = (solcToLink, deployed) => {
+  // Assuming only one reference
+  const oldBytecode = solcToLink.evm.bytecode.object
+  const references = linker.findLinkReferences(oldBytecode)
+  const libraryName = Object.keys(references)[0]
+  const newBytecode = linker.linkBytecode(oldBytecode, {
+    [libraryName]: deployed.address
+  })
+  return newBytecode
+}
+
 async function deployContracts ({
   registrationFee = REGISTRATION_FEE,
-  compile = false,
   verbose = false
 }) {
-  if (compile) {
-    await bre.run('compile')
-  }
+  const solcs = await compileContracts()
 
-  const MiMC = bre.artifacts.require('MiMC')
-  const Semaphore = bre.artifacts.require('Semaphore')
-  const ProofOfBurn = bre.artifacts.require('ProofOfBurn')
+  const MiMCSolc = solcs['MerkleTree.sol'].MiMC
+  const SemaphoreSolc = solcs['Semaphore.sol'].Semaphore
+  const ProofOfBurnSolc = solcs['ProofOfBurn.sol'].ProofOfBurn
 
-  MiMC.bytecode = buildMimcBytecode()
+  MiMCSolc.evm.bytecode.object = buildMimcBytecode()
+  const provider = new ethers.providers.JsonRpcProvider()
+  const signer = provider.getSigner()
 
-  const mimcInstance = await MiMC.new()
-  await Semaphore.link(mimcInstance)
+  const MiMCContract = ethers.ContractFactory.fromSolidity(MiMCSolc, signer)
 
-  const semaphoreInstance = await Semaphore.new(SEMAPHORE_TREE_DEPTH, 0, 0)
-
-  const proofOfBurnInstance = await ProofOfBurn.new(
-    semaphoreInstance.address,
-    ethers.utils.parseEther(registrationFee.toString())
+  const ProofOfBurnContract = ethers.ContractFactory.fromSolidity(
+    ProofOfBurnSolc,
+    signer
   )
+
+  const mimcInstance = await (await MiMCContract.deploy()).deployed()
+
+  SemaphoreSolc.evm.bytecode.object = linkBytecode(SemaphoreSolc, mimcInstance)
+
+  const SemaphoreContract = ethers.ContractFactory.fromSolidity(
+    SemaphoreSolc,
+    signer
+  )
+
+  const semaphoreInstance = await (
+    await SemaphoreContract.deploy(SEMAPHORE_TREE_DEPTH, 0, 0)
+  ).deployed()
+
+  const proofOfBurnInstance = await (
+    await ProofOfBurnContract.deploy(
+      semaphoreInstance.address,
+      ethers.utils.parseEther(registrationFee.toString())
+    )
+  ).deployed()
 
   await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
 

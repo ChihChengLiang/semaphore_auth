@@ -67,14 +67,7 @@ const compileContracts = async () => {
   const output = JSON.parse(
     mySolc.compile(JSON.stringify(input), { import: findImports })
   )
-  console.log(output)
+  return output.contracts
 }
 
-if (require.main === module) {
-  compileContracts()
-    .then(() => process.exit(0))
-    .catch(error => {
-      console.error(error)
-      process.exit(1)
-    })
-}
+module.exports = { compileContracts }
