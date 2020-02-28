@@ -1,6 +1,6 @@
 const test = require('ava')
 const libsemaphore = require('libsemaphore')
-const deploy = require('../scripts/deploy')
+const deploy = require('../lib/deploy')
 const ethers = require('ethers')
 const { REGISTRATION_FEE } = require('../constants')
 
