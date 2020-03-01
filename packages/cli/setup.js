@@ -34,7 +34,6 @@ const checkMaybeDownload = async (name, fromURL, toPath) => {
 
 const setupHandler = async argv => {
   console.log('Setting up')
-  if (!fs.existsSync(ROOT_DIR)) fs.mkdirSync(ROOT_DIR)
   await checkMaybeDownload('Circuit', CIRCUIT_URL, CIRCUIT_PATH)
   await checkMaybeDownload('Proving key', PROVING_KEY_URL, PROVING_KEY_PATH)
 }

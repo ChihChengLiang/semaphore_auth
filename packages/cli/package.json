@@ -11,6 +11,7 @@
   "dependencies": {
     "contracts": "link:../contracts/",
     "env-paths": "^2.2.0",
+    "libsemaphore": "^1.0.13",
     "node-fetch": "^2.6.0",
     "ora": "^4.0.3",
     "prompts": "^2.3.1",
