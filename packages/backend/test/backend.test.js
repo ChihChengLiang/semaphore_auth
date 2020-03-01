@@ -13,11 +13,14 @@ const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')
 const test = require('ava')
 
+const configs = require('../src/configs')
+
 test('should post a new post', async t => {
   const registrationFee = REGISTRATION_FEE
   const contracts = await deployContracts({ registrationFee })
-  app.set('ProofOfBurnAddress', contracts.ProofOfBurn.address)
-  app.set('SemaphoreAddress', contracts.Semaphore.address)
+
+  // Override the address
+  configs.SEMAPHORE_ADDRESS = contracts.Semaphore.address
 
   const identity = libsemaphore.genIdentity()
   const identityCommitment = libsemaphore.genIdentityCommitment(identity)
@@ -69,7 +72,7 @@ test('should post a new post', async t => {
   )
 
   await request(app)
-    .post('/post')
+    .post('/posts/new')
     .send({
       postBody: 'foooooo',
       proof: stringfiedProof,
@@ -80,7 +83,7 @@ test('should post a new post', async t => {
     .then(res => t.is(res.text, 'OK'))
 
   await request(app)
-    .get('/')
+    .get('/posts')
     .expect(200)
     .then(res => t.is(res.body.posts[0].postBody, 'foooooo'))
 })

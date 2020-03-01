@@ -68,7 +68,6 @@ async function deployContracts ({
   await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
 
   if (verbose) {
-    console.log('MIMC address', mimcInstance.address)
     console.log(`SEMAPHORE_ADDRESS=${semaphoreInstance.address}`)
     console.log(`PROOF_OF_BURN_ADDRESS=${proofOfBurnInstance.address}`)
   }

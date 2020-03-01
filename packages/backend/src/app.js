@@ -7,6 +7,8 @@ const snarkjs = require('snarkjs')
 const { Model } = require('objection')
 const { VERIFYING_KEY_PATH } = require('semaphore-auth-contracts/constants')
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
+const path = require('path')
+const configs = require('./configs')
 
 const knex = require('knex')({
   client: 'sqlite3',
@@ -63,7 +65,7 @@ function validateSignalHash () {}
 function validateNullifierNotSeen () {}
 async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
-  const semaphore = semaphoreContract(provider, app.get('SemaphoreAddress'))
+  const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
 
   const isInRootHistory = await semaphore.isInRootHistory(root.toString())
   if (!isInRootHistory) throw Error('Root not in history')
@@ -80,12 +82,14 @@ async function validateProof (proof, publicSignals) {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/', async (req, res) => {
+app.use('/', express.static(path.join(__dirname, '../../frontend/dist')))
+
+app.get('/posts', async (req, res) => {
   const posts = await Posts.query().orderBy('id')
   res.json({ posts })
 })
 
-app.post('/post', async (req, res) => {
+app.post('/posts/new', async (req, res) => {
   const rawProof = req.body.proof
   const parsedProof = libsemaphore.unstringifyBigInts(JSON.parse(rawProof))
   const parsedPublicSignals = libsemaphore.unstringifyBigInts(
