@@ -1,19 +1,32 @@
 const fs = require('fs')
 const path = require('path')
+const { compileContracts } = require('../lib/compile')
 
-function copyABI (contractName) {
-  const fromPath = `../artifacts/${contractName}.json`
-  const toPath = `../abis/${contractName}.json`
-  const artifact = require(fromPath)
+const main = async () => {
+  const solcs = await compileContracts()
 
-  fs.writeFileSync(
-    path.join(__dirname, toPath),
-    JSON.stringify(artifact.abi, null, 2) // spacing level = 2
-  )
-  console.log(
-    `${contractName}: Copied ABI from ${fromPath} to ${toPath}`
-  )
+  const SemaphoreABI = solcs['Semaphore.sol'].Semaphore.abi
+  const ProofOfBurnABI = solcs['ProofOfBurn.sol'].ProofOfBurn.abi
+
+  saveABI('Semaphore', SemaphoreABI)
+  saveABI('ProofOfBurn', ProofOfBurnABI)
 }
 
-copyABI('ProofOfBurn')
-copyABI('Semaphore')
+const saveABI = (contractName, abi) => {
+  const toPath = path.join(__dirname, `../abis/${contractName}.json`)
+
+  fs.writeFileSync(
+    toPath,
+    JSON.stringify(abi, null, 2) // spacing level = 2
+  )
+  console.log(`${contractName}: Saved ABI to ${toPath}`)
+}
+
+if (require.main === module) {
+  main()
+    .then(() => process.exit(0))
+    .catch(error => {
+      console.error(error)
+      process.exit(1)
+    })
+}

@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "build": "parcel build index.html",
-    "start": "parcel serve index.html"
+    "build": "parcel build index.html --no-autoinstall",
+    "start": "parcel serve index.html --no-autoinstall"
   },
   "author": "",
   "license": "ISC",

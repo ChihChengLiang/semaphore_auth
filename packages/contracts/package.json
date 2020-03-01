@@ -6,29 +6,25 @@
   "scripts": {
     "download_snarks": "sh ./scripts/downloadSnarks.sh",
     "build_verifier": "rm semaphore/semaphorejs/contracts/verifier.sol && npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/contracts/verifier.sol",
-    "compile": "npx buidler compile --force && npm run copyABIs",
     "deploy": "node ./scripts/deploy.js --verbose",
-    "test": "npx buidler --network localhost test",
+    "test": "ava",
     "copyABIs": "node ./scripts/copyABIs.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomiclabs/buidler": "^1.1.2",
-    "@nomiclabs/buidler-truffle5": "^1.1.2",
-    "@nomiclabs/buidler-web3": "^1.1.2",
-    "@openzeppelin/test-helpers": "^0.5.4",
-    "ganache": "^6.4.4",
+    "ava": "^3.4.0",
     "ganache-cli": "^6.9.1",
-    "standard": "^14.3.1",
-    "supertest": "^4.0.2",
-    "web3": "^1.2.6"
+    "yarn": "^1.22.0"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "knex": "^0.20.9",
     "libsemaphore": "0.0.17",
-    "objection": "^2.1.2",
-    "sqlite3": "^4.1.1"
+    "node-fetch": "^2.6.0",
+    "solc": "^0.6.3"
+  },
+  "ava": {
+    "files": [
+      "test/*"
+    ]
   }
 }
