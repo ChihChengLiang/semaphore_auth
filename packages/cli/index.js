@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs')
 
 const { setupHandler } = require('./setup')
@@ -6,6 +7,7 @@ const {
   listIdentityHandler,
   registerIdentityHandler
 } = require('./identities')
+const { newPostHandler } = require('./posts')
 const { ROOT_DIR, IDENTITIES_DIR } = require('./constants')
 
 const initDirs = () => {
@@ -27,7 +29,16 @@ require('yargs')
       .demandCommand()
   })
   .command('view', 'View latest posts')
-  .command('post', 'Post a new article')
+  .command(
+    'post [article]',
+    'Post a new article',
+    yargs => {
+      yargs.positional('article', {
+        describe: 'The relative path of a markdown file to post'
+      })
+    },
+    newPostHandler
+  )
   .demandCommand().argv
 
 // Setup
