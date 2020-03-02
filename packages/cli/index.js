@@ -7,7 +7,7 @@ const {
   listIdentityHandler,
   registerIdentityHandler
 } = require('./identities')
-const { newPostHandler } = require('./posts')
+const { newPostHandler, viewPostHandler } = require('./posts')
 const { ROOT_DIR, IDENTITIES_DIR } = require('./constants')
 
 const initDirs = () => {
@@ -28,7 +28,7 @@ require('yargs')
       .command('register', 'List existing identities', registerIdentityHandler)
       .demandCommand()
   })
-  .command('view', 'View latest posts')
+  .command('view', 'View latest posts', {}, viewPostHandler)
   .command(
     'post [article]',
     'Post a new article',

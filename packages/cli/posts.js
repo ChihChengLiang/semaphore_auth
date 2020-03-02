@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const ethers = require('ethers')
+const prompts = require('prompts')
 
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
 const { SEMAPHORE_TREE_DEPTH } = require('semaphore-auth-contracts/constants')
@@ -23,6 +24,8 @@ const {
 } = require('libsemaphore')
 const ora = require('ora')
 const { defaultIdentityName } = require('./config')
+
+const fetch = require('node-fetch')
 
 const genAuth = async (externalNullifierStr, signalStr) => {
   const spinner = ora({
@@ -83,23 +86,54 @@ const genAuth = async (externalNullifierStr, signalStr) => {
   return output
 }
 
+const viewPostHandler = async () => {
+  const posts = await fetch('http://localhost:5566/posts')
+    .then(res => res.json())
+    .then(result => result.posts)
+  const response = await prompts({
+    type: 'select',
+    name: 'value',
+    message: 'Read the latest posts',
+    choices: posts.map(post => {
+      return {
+        title: `${post.id}  ${post.postBody.slice(0, 20)}`,
+        value: post
+      }
+    })
+  })
+  console.info(`Article #${response.value.id}`)
+  console.info(response.value.postBody)
+}
+
 const newPostHandler = async argv => {
   const articlePath = argv.article
-  const article = fs.readFileSync(path.join(process.cwd(), articlePath))
-  console.info(article.toString())
-  const signalStr = ethers.utils.hashMessage(article.toString())
+  const article = fs
+    .readFileSync(path.join(process.cwd(), articlePath))
+    .toString()
+
+  const signalStr = ethers.utils.hashMessage(article)
   console.info(signalStr)
 
-  const authData = await genAuth('ANONlocalhost', signalStr)
-  return {}
+  const { proof, publicSignals } = await genAuth('ANONlocalhost', signalStr)
+
+  //   fs.writeFileSync(path.join(process.cwd(), "foo.cache"), JSON.stringify({ proof, publicSignals }))
+  //   const { proof, publicSignals } = JSON.parse(
+  //     fs.readFileSync(path.join(process.cwd(), 'foo.cache'))
+  //   )
+  console.log(publicSignals)
 
   // Request backend /posts/new
 
-  //   {
-  //    postBody: 'foooooo',
-  //    proof: stringfiedProof,
-  //    publicSignals: stringfiedPublicSignals
-  //     }
+  await fetch('http://localhost:5566/posts/new', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ postBody: article, proof, publicSignals })
+  })
+    .then(res => res.text())
+    .then(result => console.info(result))
 }
 
-module.exports = { newPostHandler }
+module.exports = { newPostHandler, viewPostHandler }
