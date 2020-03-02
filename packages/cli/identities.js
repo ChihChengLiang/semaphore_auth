@@ -15,7 +15,7 @@ const { REGISTRATION_FEE } = require('semaphore-auth-contracts/constants')
 const { PROOF_OF_BURN_ADDRESS } = require('./constants')
 const ethers = require('ethers')
 
-const createIdentityHandler = () => {
+const createIdentity = () => {
   const id = genIdentity()
   console.info('Generated Identity', id)
 
@@ -23,6 +23,11 @@ const createIdentityHandler = () => {
   const filePath = path.join(IDENTITIES_DIR, filename)
   fs.writeFileSync(filePath, serialiseIdentity(id))
   console.info('Saved identity to ', filePath)
+  return { id, filename }
+}
+
+const createIdentityHandler = () => {
+  createIdentity()
 }
 
 const listIdentityHandler = () => {
@@ -76,11 +81,11 @@ const registerIdentityHandler = async () => {
     value: ethers.utils.parseEther(REGISTRATION_FEE.toString())
   })
   const receipt = await tx.wait()
-  console.info("identityCommitment sent!", receipt.transactionHash)
-
+  console.info('identityCommitment sent!', receipt.transactionHash)
 }
 
 module.exports = {
+  createIdentity,
   createIdentityHandler,
   listIdentityHandler,
   registerIdentityHandler
