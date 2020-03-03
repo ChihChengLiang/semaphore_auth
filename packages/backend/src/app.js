@@ -114,7 +114,8 @@ app.post('/posts/new', async (req, res) => {
 
   validateExternalNullifier(externalNullifier)
   validateSignalHash(signalHash)
-  await validateInRootHistory(root)
+  // TODO: Fix what's wrong here
+  // await validateInRootHistory(root)
   validateNullifierNotSeen(nullifierHash)
   await validateProof(parsedProof, parsedPublicSignals)
 
