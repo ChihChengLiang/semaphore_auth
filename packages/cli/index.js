@@ -51,13 +51,3 @@ require('yargs')
     newPostHandler
   )
   .demandCommand().argv
-
-// Setup
-
-// Identity
-
-// Build: Download verification keys etc ...
-
-// Get posts ...
-
-// Post a new article

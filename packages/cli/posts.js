@@ -118,13 +118,7 @@ const newPostHandler = async argv => {
 
   const { proof, publicSignals } = await genAuth('ANONlocalhost', signalStr)
 
-  //   fs.writeFileSync(path.join(process.cwd(), "foo.cache"), JSON.stringify({ proof, publicSignals }))
-  //   const { proof, publicSignals } = JSON.parse(
-  //     fs.readFileSync(path.join(process.cwd(), 'foo.cache'))
-  //   )
   console.log(publicSignals)
-
-  // Request backend /posts/new
 
   await fetch(new URL('./posts/new', hostInfo.get().hostUrl), {
     method: 'POST',
