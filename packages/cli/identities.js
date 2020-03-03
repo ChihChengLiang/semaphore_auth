@@ -5,6 +5,7 @@ const {
   genIdentityCommitment
 } = require('libsemaphore')
 const { IDENTITIES_DIR } = require('./constants')
+const { hostInfo } = require('./config')
 const fs = require('fs')
 const path = require('path')
 const prompts = require('prompts')
@@ -12,7 +13,6 @@ const {
   proofOfBurnContract
 } = require('semaphore-auth-contracts/src/contracts')
 const { REGISTRATION_FEE } = require('semaphore-auth-contracts/constants')
-const { PROOF_OF_BURN_ADDRESS } = require('./constants')
 const ethers = require('ethers')
 
 const createIdentity = () => {
@@ -74,14 +74,25 @@ const registerIdentityHandler = async () => {
   const identityCommitment = genIdentityCommitment(idToRegister)
   console.info('Generated identityCommitment', identityCommitment)
 
-  const provider = new ethers.providers.JsonRpcProvider()
-  const signer = provider.getSigner()
-  const proofOfBurn = proofOfBurnContract(signer, PROOF_OF_BURN_ADDRESS)
-  const tx = await proofOfBurn.register(identityCommitment.toString(), {
-    value: ethers.utils.parseEther(REGISTRATION_FEE.toString())
-  })
-  const receipt = await tx.wait()
-  console.info('identityCommitment sent!', receipt.transactionHash)
+  if (hostInfo.get().network === 'local') {
+    const provider = new ethers.providers.JsonRpcProvider()
+    const signer = provider.getSigner()
+    const proofOfBurn = proofOfBurnContract(
+      signer,
+      hostInfo.get().registrationAddress
+    )
+    const tx = await proofOfBurn.register(identityCommitment.toString(), {
+      value: ethers.utils.parseEther(REGISTRATION_FEE.toString())
+    })
+    const receipt = await tx.wait()
+    console.info('identityCommitment sent!', receipt.transactionHash)
+  } else {
+    console.info(
+      `Please sent a transaction to ${hostInfo.get().network}: ${hostInfo.get().registrationAddress}`
+    )
+    console.info(`with identityCommitment as ${identityCommitment.toString()}`)
+    console.info(`and with value ${REGISTRATION_FEE.toString()}`)
+  }
 }
 
 module.exports = {

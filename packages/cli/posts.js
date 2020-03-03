@@ -7,7 +7,6 @@ const prompts = require('prompts')
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
 const { SEMAPHORE_TREE_DEPTH } = require('semaphore-auth-contracts/constants')
 const {
-  SEMAPHORE_ADDRESS,
   CIRCUIT_PATH,
   PROVING_KEY_PATH,
   IDENTITIES_DIR
@@ -23,7 +22,7 @@ const {
   genIdentityCommitment
 } = require('libsemaphore')
 const ora = require('ora')
-const { defaultIdentityName } = require('./config')
+const { defaultIdentityName, hostInfo } = require('./config')
 
 const fetch = require('node-fetch')
 
@@ -48,7 +47,10 @@ const genAuth = async (externalNullifierStr, signalStr) => {
 
   spinner.text = 'Formatting intputs'
   const circuit = genCircuit(cirDef)
-  const semaphoreInstance = semaphoreContract(provider, SEMAPHORE_ADDRESS)
+  const semaphoreInstance = semaphoreContract(
+    provider,
+    hostInfo.get().semaphoreAddress
+  )
   const id_tree_index = await semaphoreInstance.getIdTreeIndex()
   const leaves = await semaphoreInstance.leaves(id_tree_index)
 
@@ -87,7 +89,7 @@ const genAuth = async (externalNullifierStr, signalStr) => {
 }
 
 const viewPostHandler = async () => {
-  const posts = await fetch('http://localhost:5566/posts')
+  const posts = await fetch(new URL('./posts', hostInfo.get().hostUrl))
     .then(res => res.json())
     .then(result => result.posts)
   const response = await prompts({
@@ -124,7 +126,7 @@ const newPostHandler = async argv => {
 
   // Request backend /posts/new
 
-  await fetch('http://localhost:5566/posts/new', {
+  await fetch(new URL('./posts/new', hostInfo.get().hostUrl), {
     method: 'POST',
     headers: {
       Accept: 'application/json',

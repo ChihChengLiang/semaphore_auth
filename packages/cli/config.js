@@ -16,5 +16,6 @@ class Config {
 }
 
 const defaultIdentityName = new Config('defaultIdentityName')
+const hostInfo = new Config('hostInfo')
 
-module.exports = { defaultIdentityName }
+module.exports = { defaultIdentityName, hostInfo }

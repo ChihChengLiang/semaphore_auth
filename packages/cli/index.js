@@ -2,6 +2,7 @@
 const fs = require('fs')
 
 const { setupHandler } = require('./setup')
+const { setServerHandler } = require('./setServer')
 const {
   createIdentityHandler,
   listIdentityHandler,
@@ -21,6 +22,16 @@ initDirs()
 require('yargs')
   .usage('A forum using zeroknowledge authentication')
   .command('setup', 'Download verification keys etc ...', {}, setupHandler)
+  .command(
+    'setServer [hostUrl]',
+    'Set the default server to interact',
+    yargs => {
+      yargs.positional('hostUrl', {
+        describe: 'The server url to connect'
+      })
+    },
+    setServerHandler
+  )
   .command('identity', 'Manage your identities', yargs => {
     yargs
       .command('create', 'Create a new identity', createIdentityHandler)

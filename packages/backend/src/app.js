@@ -84,6 +84,16 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/', express.static(path.join(__dirname, '../../frontend/dist')))
 
+app.get('/info', (req, res) => {
+  res.json({
+    serverName: 'AwesomeForum',
+    network: configs.NETWORK,
+    registrationStyle: 'ProofOfBurn',
+    registrationAddress: configs.PROOF_OF_BURN_ADDRESS,
+    semaphoreAddress: configs.SEMAPHORE_ADDRESS
+  })
+})
+
 app.get('/posts', async (req, res) => {
   const posts = await Posts.query().orderBy('id')
   res.json({ posts })
