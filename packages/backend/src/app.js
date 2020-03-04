@@ -84,7 +84,7 @@ async function validateInRootHistory (root) {
   const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
 
   const isInRootHistory = await semaphore.isInRootHistory(root.toString())
-  if (!isInRootHistory) throw Error('Root not in history')
+  if (!isInRootHistory) throw Error(`Root (${root.toString()}) not in history`)
 }
 
 async function validateProof (proof, publicSignals) {

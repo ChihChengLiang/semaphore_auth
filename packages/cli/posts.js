@@ -44,10 +44,11 @@ const genAuth = async (externalNullifierStr, signalStr) => {
   const provider = new ethers.providers.JsonRpcProvider()
 
   const identityName = defaultIdentityName.get()
+  spinner.info(`Using defaultIdentityName: ${identityName}`)
   const identity = unSerialiseIdentity(
     fs.readFileSync(path.join(IDENTITIES_DIR, identityName))
   )
-
+  spinner.start()
   spinner.text = 'Formatting intputs'
   const circuit = genCircuit(cirDef)
   const semaphoreInstance = semaphoreContract(
