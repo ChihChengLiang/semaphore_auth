@@ -22,7 +22,7 @@ const knex = require('knex')({
 
 Model.knex(knex)
 
-class Posts extends Model {
+class Post extends Model {
   static get tableName () {
     return 'posts'
   }
@@ -67,15 +67,15 @@ function validateExternalNullifierMatch (actual, externalNullifierStr) {
 
 function validateSignalHash () {}
 async function validateNullifierNotSeen (nullifierHash) {
-  const results = await Posts.query()
+  const results = await Post.query()
     .select('nullifierHash', 'externalNullifierStr', 'id')
-    .where('nullifierHash', nullifierHash)
+    .where('nullifierHash', nullifierHash.toString())
     .catch(console.error)
 
   if (results.length > 0) {
     const post = results[0]
     throw new Error(
-      `Spam post: Seen the ${nullifierHash} hash before for the same external nullifier "${post.expectedExternalNullifierStr}" on post ${post.id}`
+      `Spam post: nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${post.externalNullifierStr}" in post id ${post.id}`
     )
   }
 }
@@ -111,7 +111,7 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/posts', async (req, res) => {
-  const posts = await Posts.query().orderBy('id')
+  const posts = await Post.query().orderBy('id')
   res.json({ posts })
 })
 
@@ -147,15 +147,16 @@ app.post('/posts/new', async (req, res) => {
     await validateNullifierNotSeen(nullifierHash)
     await validateProof(parsedProof, parsedPublicSignals)
   } catch (err) {
-    res.status(400).send(`Bad Request:${err.toString()}`)
+    res.status(400).end(`Bad Request:${err.toString()}`)
+    return
   }
 
-  await Posts.query()
+  await Post.query()
     .insert({
       postBody: req.body.postBody,
       proof: rawProof,
       root,
-      nullifierHash,
+      nullifierHash: nullifierHash.toString(),
       signalHash,
       externalNullifier,
       externalNullifierStr: expectedExternalNullifierStr
