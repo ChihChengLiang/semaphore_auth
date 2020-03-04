@@ -119,7 +119,7 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/posts', async (req, res) => {
-  const posts = await Post.query().orderBy('id')
+  const posts = await Post.query().orderBy('id', 'desc')
   res.json({ posts })
 })
 

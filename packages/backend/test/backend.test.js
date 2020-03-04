@@ -8,6 +8,9 @@ const {
   PROVING_KEY_CACHE_PATH,
   VERIFYING_KEY_PATH
 } = require('semaphore-auth-contracts/constants')
+const {
+  EpochbasedExternalNullifier
+} = require('semaphore-auth-contracts/lib/externalNullifier')
 const fs = require('fs')
 const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')
@@ -37,9 +40,20 @@ test('should post a new post', async t => {
 
   t.is(leaves[0].toString(), identityCommitment.toString())
 
-  const signalStr = 'foooooo'
+  const postBody = 'foooooo'
+  const signalStr = ethers.utils.hashMessage(postBody)
 
-  const externalNullifier = libsemaphore.genExternalNullifier('ANONlocalhost')
+  const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+    configs.SERVER_NAME,
+    '/posts/new',
+    300 * 1000 // rate limit to 30 seconds
+  )
+
+  const externalNullifierStr = newPostExternalNullifierGen.toString()
+  console.log(externalNullifierStr)
+  const externalNullifier = libsemaphore.genExternalNullifier(
+    externalNullifierStr
+  )
 
   console.log('genWitness')
 
@@ -74,16 +88,18 @@ test('should post a new post', async t => {
   await request(app)
     .post('/posts/new')
     .send({
-      postBody: 'foooooo',
+      postBody,
       proof: stringfiedProof,
       publicSignals: stringfiedPublicSignals
     })
     .set('Accept', 'application/json')
     .expect(200)
-    .then(res => t.is(res.text, 'OK'))
+    .then(res => {
+      t.is(res.text, 'OK')
+    })
 
   await request(app)
     .get('/posts')
     .expect(200)
-    .then(res => t.is(res.body.posts[0].postBody, 'foooooo'))
+    .then(res => t.is(res.body.posts[0].postBody, postBody))
 })
