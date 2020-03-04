@@ -6,6 +6,7 @@ const { setServerHandler } = require('./setServer')
 const {
   createIdentityHandler,
   listIdentityHandler,
+  setIdentityHandler,
   registerIdentityHandler
 } = require('./identities')
 const { newPostHandler, viewPostHandler } = require('./posts')
@@ -36,6 +37,7 @@ require('yargs')
     yargs
       .command('create', 'Create a new identity', createIdentityHandler)
       .command('list', 'List existing identities', listIdentityHandler)
+      .command('set', 'Set default identity', setIdentityHandler)
       .command('register', 'List existing identities', registerIdentityHandler)
       .demandCommand()
   })

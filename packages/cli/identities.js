@@ -5,7 +5,7 @@ const {
   genIdentityCommitment
 } = require('libsemaphore')
 const { IDENTITIES_DIR } = require('./constants')
-const { hostInfo } = require('./config')
+const { hostInfo, defaultIdentityName } = require('./config')
 const fs = require('fs')
 const path = require('path')
 const prompts = require('prompts')
@@ -38,6 +38,25 @@ const listIdentityHandler = () => {
   }
 }
 
+const setIdentityHandler = async () => {
+  const ids = fs.readdirSync(IDENTITIES_DIR)
+  const choices = ids.map(filename => {
+    return {
+      title: filename,
+      value: filename
+    }
+  })
+  const response = await prompts({
+    type: 'select',
+    name: 'value',
+    message: 'Choose an identity you would like to register',
+    choices
+  })
+  selectedId = response.value
+  defaultIdentityName.set(selectedId)
+  console.info(`Set default id to ${selectedId}`)
+}
+
 const registerIdentityHandler = async () => {
   const ids = fs.readdirSync(IDENTITIES_DIR)
 
@@ -59,8 +78,7 @@ const registerIdentityHandler = async () => {
       type: 'select',
       name: 'value',
       message: 'Choose an identity you would like to register',
-      choices,
-      initial: 1
+      choices
     })
     selectedId = response.value
   } else {
@@ -70,11 +88,10 @@ const registerIdentityHandler = async () => {
     fs.readFileSync(path.join(IDENTITIES_DIR, selectedId))
   )
 
-  console.info(idToRegister)
   const identityCommitment = genIdentityCommitment(idToRegister)
   console.info('Generated identityCommitment', identityCommitment)
 
-  if (hostInfo.get().network === 'local') {
+  if (hostInfo.get().network === 'localhost') {
     const provider = new ethers.providers.JsonRpcProvider()
     const signer = provider.getSigner()
     const proofOfBurn = proofOfBurnContract(
@@ -85,10 +102,14 @@ const registerIdentityHandler = async () => {
       value: ethers.utils.parseEther(REGISTRATION_FEE.toString())
     })
     const receipt = await tx.wait()
-    console.info('identityCommitment sent!', receipt.transactionHash)
+    console.info(
+      `Sent identityCommitment to contract: ${proofOfBurn.address} tx: ${receipt.transactionHash}`
+    )
   } else {
     console.info(
-      `Please sent a transaction to ${hostInfo.get().network}: ${hostInfo.get().registrationAddress}`
+      `Please sent a transaction to ${hostInfo.get().network}: ${
+        hostInfo.get().registrationAddress
+      }`
     )
     console.info(`with identityCommitment as ${identityCommitment.toString()}`)
     console.info(`and with value ${REGISTRATION_FEE.toString()}`)
@@ -99,5 +120,6 @@ module.exports = {
   createIdentity,
   createIdentityHandler,
   listIdentityHandler,
+  setIdentityHandler,
   registerIdentityHandler
 }
