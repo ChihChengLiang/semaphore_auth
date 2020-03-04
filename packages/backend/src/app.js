@@ -65,7 +65,15 @@ function validateExternalNullifierMatch (actual, externalNullifierStr) {
   }
 }
 
-function validateSignalHash () {}
+function validateSignalHash (postBody, actual) {
+  const signalStr = ethers.utils.hashMessage(postBody)
+  const expected = libsemaphore.keccak256HexToBigInt(
+    ethers.utils.hexlify(ethers.utils.toUtf8Bytes(signalStr))
+  )
+  if (actual !== expected) {
+    throw Error(`Expected signalHash ${expected}, got ${actual}`)
+  }
+}
 async function validateNullifierNotSeen (nullifierHash) {
   const results = await Post.query()
     .select('nullifierHash', 'externalNullifierStr', 'id')
@@ -133,6 +141,7 @@ app.post('/posts/new', async (req, res) => {
     signalHash,
     externalNullifier
   ] = parsedPublicSignals
+  const postBody = req.body.postBody
 
   const expectedExternalNullifierStr = newPostExternalNullifierGen.toString()
 
@@ -141,7 +150,7 @@ app.post('/posts/new', async (req, res) => {
       externalNullifier,
       expectedExternalNullifierStr
     )
-    validateSignalHash(signalHash)
+    validateSignalHash(postBody, signalHash)
     // TODO: Fix what's wrong here
     // await validateInRootHistory(root)
     await validateNullifierNotSeen(nullifierHash)
@@ -153,7 +162,7 @@ app.post('/posts/new', async (req, res) => {
 
   await Post.query()
     .insert({
-      postBody: req.body.postBody,
+      postBody,
       proof: rawProof,
       root,
       nullifierHash: nullifierHash.toString(),
