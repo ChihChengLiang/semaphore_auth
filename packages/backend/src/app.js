@@ -7,6 +7,9 @@ const snarkjs = require('snarkjs')
 const { Model } = require('objection')
 const { VERIFYING_KEY_PATH } = require('semaphore-auth-contracts/constants')
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
+const {
+  EpochbasedExternalNullifier
+} = require('semaphore-auth-contracts/lib/externalNullifier')
 const path = require('path')
 const configs = require('./configs')
 
@@ -40,6 +43,7 @@ async function createSchema () {
     table.string('nullifierHash')
     table.string('signalHash')
     table.string('externalNullifier')
+    table.string('externalNullifierStr')
 
     table
       .dateTime('createdAt')
@@ -50,19 +54,31 @@ async function createSchema () {
 
 createSchema()
 
-function validateExternalNullifier (externalNullifier) {
-  const legitExternalNullifier = snarkjs.bigInt(
-    libsemaphore.genExternalNullifier('ANONlocalhost')
+function validateExternalNullifierMatch (actual, externalNullifierStr) {
+  const expected = snarkjs.bigInt(
+    libsemaphore.genExternalNullifier(externalNullifierStr)
   )
-  if (legitExternalNullifier !== externalNullifier) {
+  if (expected !== actual) {
     throw Error(
-      `Illegal externalNullifier: expect ${legitExternalNullifier}, got ${externalNullifier}`
+      `Illegal externalNullifier: expect "${expected}" (${externalNullifierStr}), got "${actual}"`
     )
   }
 }
 
 function validateSignalHash () {}
-function validateNullifierNotSeen () {}
+async function validateNullifierNotSeen (nullifierHash) {
+  const results = await Posts.query()
+    .select('nullifierHash', 'externalNullifierStr', 'id')
+    .where('nullifierHash', nullifierHash)
+    .catch(console.error)
+
+  if (results.length > 0) {
+    const post = results[0]
+    throw new Error(
+      `Spam post: Seen the ${nullifierHash} hash before for the same external nullifier "${post.expectedExternalNullifierStr}" on post ${post.id}`
+    )
+  }
+}
 async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
   const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
@@ -86,7 +102,7 @@ app.use('/', express.static(path.join(__dirname, '../../frontend/dist')))
 
 app.get('/info', (req, res) => {
   res.json({
-    serverName: 'AwesomeForum',
+    serverName: configs.SERVER_NAME,
     network: configs.NETWORK,
     registrationStyle: 'ProofOfBurn',
     registrationAddress: configs.PROOF_OF_BURN_ADDRESS,
@@ -98,6 +114,12 @@ app.get('/posts', async (req, res) => {
   const posts = await Posts.query().orderBy('id')
   res.json({ posts })
 })
+
+const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+  configs.SERVER_NAME,
+  '/posts/new',
+  300 * 1000 // rate limit to 30 seconds
+)
 
 app.post('/posts/new', async (req, res) => {
   const rawProof = req.body.proof
@@ -112,21 +134,33 @@ app.post('/posts/new', async (req, res) => {
     externalNullifier
   ] = parsedPublicSignals
 
-  validateExternalNullifier(externalNullifier)
-  validateSignalHash(signalHash)
-  // TODO: Fix what's wrong here
-  // await validateInRootHistory(root)
-  validateNullifierNotSeen(nullifierHash)
-  await validateProof(parsedProof, parsedPublicSignals)
+  const expectedExternalNullifierStr = newPostExternalNullifierGen.toString()
 
-  await Posts.query().insert({
-    postBody: req.body.postBody,
-    proof: rawProof,
-    root,
-    nullifierHash,
-    signalHash,
-    externalNullifier
-  })
+  try {
+    validateExternalNullifierMatch(
+      externalNullifier,
+      expectedExternalNullifierStr
+    )
+    validateSignalHash(signalHash)
+    // TODO: Fix what's wrong here
+    // await validateInRootHistory(root)
+    await validateNullifierNotSeen(nullifierHash)
+    await validateProof(parsedProof, parsedPublicSignals)
+  } catch (err) {
+    res.status(400).send(`Bad Request:${err.toString()}`)
+  }
+
+  await Posts.query()
+    .insert({
+      postBody: req.body.postBody,
+      proof: rawProof,
+      root,
+      nullifierHash,
+      signalHash,
+      externalNullifier,
+      externalNullifierStr: expectedExternalNullifierStr
+    })
+    .catch(console.error)
   res.send('OK')
 })
 

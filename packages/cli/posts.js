@@ -7,6 +7,9 @@ const prompts = require('prompts')
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
 const { SEMAPHORE_TREE_DEPTH } = require('semaphore-auth-contracts/constants')
 const {
+  EpochbasedExternalNullifier
+} = require('semaphore-auth-contracts/lib/externalNullifier')
+const {
   CIRCUIT_PATH,
   PROVING_KEY_PATH,
   IDENTITIES_DIR
@@ -107,6 +110,12 @@ const viewPostHandler = async () => {
   console.info(response.value.postBody)
 }
 
+const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+  hostInfo.get().serverName,
+  '/posts/new',
+  300 * 1000 // rate limit to 30 seconds
+)
+
 const newPostHandler = async argv => {
   const articlePath = argv.article
   const article = fs
@@ -116,9 +125,12 @@ const newPostHandler = async argv => {
   const signalStr = ethers.utils.hashMessage(article)
   console.info(signalStr)
 
-  const { proof, publicSignals } = await genAuth('ANONlocalhost', signalStr)
-
-  console.log(publicSignals)
+  const externalNullifierStr = newPostExternalNullifierGen.toString()
+  console.info('Using externalNullifierStr as:', externalNullifierStr)
+  const { proof, publicSignals } = await genAuth(
+    externalNullifierStr,
+    signalStr
+  )
 
   await fetch(new URL('./posts/new', hostInfo.get().hostUrl), {
     method: 'POST',
@@ -130,6 +142,7 @@ const newPostHandler = async argv => {
   })
     .then(res => res.text())
     .then(result => console.info(result))
+    .catch(error => console.error(error))
 }
 
 module.exports = { newPostHandler, viewPostHandler }
