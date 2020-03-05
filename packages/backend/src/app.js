@@ -7,6 +7,9 @@ const snarkjs = require('snarkjs')
 const { Model } = require('objection')
 const { VERIFYING_KEY_PATH } = require('semaphore-auth-contracts/constants')
 const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
+const {
+  EpochbasedExternalNullifier
+} = require('semaphore-auth-contracts/lib/externalNullifier')
 const path = require('path')
 const configs = require('./configs')
 
@@ -19,7 +22,7 @@ const knex = require('knex')({
 
 Model.knex(knex)
 
-class Posts extends Model {
+class Post extends Model {
   static get tableName () {
     return 'posts'
   }
@@ -40,6 +43,7 @@ async function createSchema () {
     table.string('nullifierHash')
     table.string('signalHash')
     table.string('externalNullifier')
+    table.string('externalNullifierStr')
 
     table
       .dateTime('createdAt')
@@ -50,25 +54,47 @@ async function createSchema () {
 
 createSchema()
 
-function validateExternalNullifier (externalNullifier) {
-  const legitExternalNullifier = snarkjs.bigInt(
-    libsemaphore.genExternalNullifier('ANONlocalhost')
+function validateExternalNullifierMatch (actual, externalNullifierStr) {
+  const expected = snarkjs.bigInt(
+    libsemaphore.genExternalNullifier(externalNullifierStr)
   )
-  if (legitExternalNullifier !== externalNullifier) {
+  if (expected !== actual) {
     throw Error(
-      `Illegal externalNullifier: expect ${legitExternalNullifier}, got ${externalNullifier}`
+      `Illegal externalNullifier: expect "${expected}" (${externalNullifierStr}), got "${actual}"`
     )
   }
 }
 
-function validateSignalHash () {}
-function validateNullifierNotSeen () {}
+function validateSignalHash (postBody, actual) {
+  const signalStr = ethers.utils.hashMessage(postBody)
+  const expected = libsemaphore.keccak256HexToBigInt(
+    ethers.utils.hexlify(ethers.utils.toUtf8Bytes(signalStr))
+  )
+  if (actual !== expected) {
+    throw Error(`Expected signalHash ${expected}, got ${actual}`)
+  }
+}
+async function validateNullifierNotSeen (nullifierHash) {
+  const results = await Post.query()
+    .select('nullifierHash', 'externalNullifierStr', 'id')
+    .where('nullifierHash', nullifierHash.toString())
+    .catch(console.error)
+
+  if (results.length > 0) {
+    const post = results[0]
+    throw new Error(
+      `Spam post: nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${post.externalNullifierStr}" in post id ${post.id}`
+    )
+  }
+}
 async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
   const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
 
-  const isInRootHistory = await semaphore.isInRootHistory(root.toString())
-  if (!isInRootHistory) throw Error('Root not in history')
+  const isInRootHistory = await semaphore.isInRootHistory(
+    libsemaphore.stringifyBigInts(root)
+  )
+  if (!isInRootHistory) throw Error(`Root (${root.toString()}) not in history`)
 }
 
 async function validateProof (proof, publicSignals) {
@@ -84,10 +110,26 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/', express.static(path.join(__dirname, '../../frontend/dist')))
 
+app.get('/info', (req, res) => {
+  res.json({
+    serverName: configs.SERVER_NAME,
+    network: configs.NETWORK,
+    registrationStyle: 'ProofOfBurn',
+    registrationAddress: configs.PROOF_OF_BURN_ADDRESS,
+    semaphoreAddress: configs.SEMAPHORE_ADDRESS
+  })
+})
+
 app.get('/posts', async (req, res) => {
-  const posts = await Posts.query().orderBy('id')
+  const posts = await Post.query().orderBy('id', 'desc')
   res.json({ posts })
 })
+
+const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+  configs.SERVER_NAME,
+  '/posts/new',
+  300 * 1000 // rate limit to 30 seconds
+)
 
 app.post('/posts/new', async (req, res) => {
   const rawProof = req.body.proof
@@ -101,21 +143,35 @@ app.post('/posts/new', async (req, res) => {
     signalHash,
     externalNullifier
   ] = parsedPublicSignals
+  const postBody = req.body.postBody
 
-  validateExternalNullifier(externalNullifier)
-  validateSignalHash(signalHash)
-  await validateInRootHistory(root)
-  validateNullifierNotSeen(nullifierHash)
-  await validateProof(parsedProof, parsedPublicSignals)
+  const expectedExternalNullifierStr = newPostExternalNullifierGen.toString()
 
-  await Posts.query().insert({
-    postBody: req.body.postBody,
-    proof: rawProof,
-    root,
-    nullifierHash,
-    signalHash,
-    externalNullifier
-  })
+  try {
+    validateExternalNullifierMatch(
+      externalNullifier,
+      expectedExternalNullifierStr
+    )
+    validateSignalHash(postBody, signalHash)
+    // await validateInRootHistory(root)
+    await validateNullifierNotSeen(nullifierHash)
+    await validateProof(parsedProof, parsedPublicSignals)
+  } catch (err) {
+    res.status(400).end(`Bad Request:${err.toString()}`)
+    return
+  }
+
+  await Post.query()
+    .insert({
+      postBody,
+      proof: rawProof,
+      root,
+      nullifierHash: nullifierHash.toString(),
+      signalHash,
+      externalNullifier,
+      externalNullifierStr: expectedExternalNullifierStr
+    })
+    .catch(console.error)
   res.send('OK')
 })
 

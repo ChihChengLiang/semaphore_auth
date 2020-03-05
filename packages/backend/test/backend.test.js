@@ -8,6 +8,9 @@ const {
   PROVING_KEY_CACHE_PATH,
   VERIFYING_KEY_PATH
 } = require('semaphore-auth-contracts/constants')
+const {
+  EpochbasedExternalNullifier
+} = require('semaphore-auth-contracts/lib/externalNullifier')
 const fs = require('fs')
 const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')
@@ -33,13 +36,25 @@ test('should post a new post', async t => {
   const cirDef = require(CIRCUIT_CACHE_PATH)
 
   const circuit = libsemaphore.genCircuit(cirDef)
-  const leaves = await contracts.ProofOfBurn.getLeaves()
+  const id_tree_index = await contracts.Semaphore.id_tree_index()
+  const leaves = await contracts.Semaphore.leaves(id_tree_index)
 
   t.is(leaves[0].toString(), identityCommitment.toString())
 
-  const signalStr = 'foooooo'
+  const postBody = 'foooooo'
+  const signalStr = ethers.utils.hashMessage(postBody)
 
-  const externalNullifier = libsemaphore.genExternalNullifier('ANONlocalhost')
+  const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+    configs.SERVER_NAME,
+    '/posts/new',
+    300 * 1000 // rate limit to 30 seconds
+  )
+
+  const externalNullifierStr = newPostExternalNullifierGen.toString()
+  console.log(externalNullifierStr)
+  const externalNullifier = libsemaphore.genExternalNullifier(
+    externalNullifierStr
+  )
 
   console.log('genWitness')
 
@@ -71,19 +86,24 @@ test('should post a new post', async t => {
     libsemaphore.stringifyBigInts(publicSignals)
   )
 
+  const root = libsemaphore.stringifyBigInts(publicSignals[0])
+  t.true(await contracts.Semaphore.isInRootHistory(root))
+
   await request(app)
     .post('/posts/new')
     .send({
-      postBody: 'foooooo',
+      postBody,
       proof: stringfiedProof,
       publicSignals: stringfiedPublicSignals
     })
     .set('Accept', 'application/json')
     .expect(200)
-    .then(res => t.is(res.text, 'OK'))
+    .then(res => {
+      t.is(res.text, 'OK')
+    })
 
   await request(app)
     .get('/posts')
     .expect(200)
-    .then(res => t.is(res.body.posts[0].postBody, 'foooooo'))
+    .then(res => t.is(res.body.posts[0].postBody, postBody))
 })

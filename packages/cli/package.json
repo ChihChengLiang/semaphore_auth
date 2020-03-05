@@ -1,0 +1,25 @@
+{
+  "name": "semaphore-auth-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "zkchan": "./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "configstore": "^5.0.1",
+    "contracts": "link:../contracts/",
+    "dotenv": "^8.2.0",
+    "env-paths": "^2.2.0",
+    "libsemaphore": "^1.0.13",
+    "node-fetch": "^2.6.0",
+    "ora": "^4.0.3",
+    "prompts": "^2.3.1",
+    "yargs": "^15.1.0"
+  }
+}

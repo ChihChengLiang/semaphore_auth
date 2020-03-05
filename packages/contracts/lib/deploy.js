@@ -24,19 +24,25 @@ const linkBytecode = (solcToLink, deployed) => {
   return newBytecode
 }
 
+const defaultSigner = () => {
+  const provider = new ethers.providers.JsonRpcProvider()
+  return provider.getSigner()
+}
+
 async function deployContracts ({
+  signer = defaultSigner(),
   registrationFee = REGISTRATION_FEE,
   verbose = false
 }) {
+  if (verbose) console.log('deploying')
   const solcs = await compileContracts()
+  if (verbose) console.log('compiled')
 
   const MiMCSolc = solcs['MerkleTree.sol'].MiMC
   const SemaphoreSolc = solcs['Semaphore.sol'].Semaphore
   const ProofOfBurnSolc = solcs['ProofOfBurn.sol'].ProofOfBurn
 
   MiMCSolc.evm.bytecode.object = buildMimcBytecode()
-  const provider = new ethers.providers.JsonRpcProvider()
-  const signer = provider.getSigner()
 
   const MiMCContract = ethers.ContractFactory.fromSolidity(MiMCSolc, signer)
 
@@ -44,8 +50,9 @@ async function deployContracts ({
     ProofOfBurnSolc,
     signer
   )
-
-  const mimcInstance = await (await MiMCContract.deploy()).deployed()
+  const mimcTx = await MiMCContract.deploy()
+  if (verbose) console.log('mimcTx', mimcTx.deployTransaction.hash)
+  const mimcInstance = await mimcTx.deployed()
 
   SemaphoreSolc.evm.bytecode.object = linkBytecode(SemaphoreSolc, mimcInstance)
 
@@ -54,16 +61,17 @@ async function deployContracts ({
     signer
   )
 
-  const semaphoreInstance = await (
-    await SemaphoreContract.deploy(SEMAPHORE_TREE_DEPTH, 0, 0)
-  ).deployed()
+  const semaphoreTx = await SemaphoreContract.deploy(SEMAPHORE_TREE_DEPTH, 0, 0)
+  if (verbose) console.log('semaphoreTx', semaphoreTx.deployTransaction.hash)
+  const semaphoreInstance = await semaphoreTx.deployed()
 
-  const proofOfBurnInstance = await (
-    await ProofOfBurnContract.deploy(
-      semaphoreInstance.address,
-      ethers.utils.parseEther(registrationFee.toString())
-    )
-  ).deployed()
+  const proofOfBurnTx = await ProofOfBurnContract.deploy(
+    semaphoreInstance.address,
+    ethers.utils.parseEther(registrationFee.toString())
+  )
+  if (verbose)
+    console.log('proofOfBurnTx', proofOfBurnTx.deployTransaction.hash)
+  const proofOfBurnInstance = await proofOfBurnTx.deployed()
 
   await semaphoreInstance.transferOwnership(proofOfBurnInstance.address)
 
