@@ -153,7 +153,7 @@ app.post('/posts/new', async (req, res) => {
       expectedExternalNullifierStr
     )
     validateSignalHash(postBody, signalHash)
-    await validateInRootHistory(root)
+    // await validateInRootHistory(root)
     await validateNullifierNotSeen(nullifierHash)
     await validateProof(parsedProof, parsedPublicSignals)
   } catch (err) {
