@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://cdn.ethers.io/scripts/ethers-v4.min.js"
+      charset="utf-8"
+      type="text/javascript"
+    ></script>
+  </head>
+  <body>
+    <h1>Send Tx here</h1>
+    <h2>Proof of Burn Address</h2>
+    <p id="network">{{{NETWORK}}}</p>
+    <p id="address">{{{ADDRESS}}}</p>
+    <h2>Identity Commitment</h2>
+    <p id="commitment">{{{COMMITMENT}}}</p>
+    <p id="abi" style="display: none;">{{{ABI}}}</p>
+    <h2>Registration Fee</h2>
+    <p id="registrationFee"></p>
+    <p id="log"></p>
+    <script>
+      async function sendTx () {
+        const log = document.getElementById('log')
+        try {
+          const accounts = await ethereum.enable()
+        } catch (err) {
+          log.innerText = err.toString()
+        }
+        const provider = new ethers.providers.Web3Provider(web3.currentProvider)
+        const address = document.getElementById('address').innerText
+        const abi = JSON.parse(document.getElementById('abi').innerText)
+        const identityCommitment = document.getElementById('commitment')
+          .innerText
+        const signer = provider.getSigner()
+        const proofOfBurn = new ethers.Contract(address, abi, signer)
+        const registrationFee = await proofOfBurn.registration_fee()
+        document.getElementById(
+          'registrationFee'
+        ).innerText = `${ethers.utils.formatEther(registrationFee)} Ether`
+        try {
+          const tx = await proofOfBurn.register(identityCommitment, {
+            value: registrationFee
+          })
+          const receipt = await tx.wait()
+          log.innerText = `sent tx: ${tx.hash}, you can close the tab and back to cli now`
+        } catch (err) {
+          log.innerText = err.toString()
+        }
+      }
+      sendTx()
+    </script>
+  </body>
+</html>

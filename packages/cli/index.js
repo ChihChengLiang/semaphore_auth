@@ -24,7 +24,7 @@ require('yargs')
   .usage('A forum using zeroknowledge authentication')
   .command('setup', 'Download verification keys etc ...', {}, setupHandler)
   .command(
-    'setServer [hostUrl]',
+    'setServer <hostUrl>',
     'Set the default server to interact',
     yargs => {
       yargs.positional('hostUrl', {
@@ -38,7 +38,22 @@ require('yargs')
       .command('create', 'Create a new identity', createIdentityHandler)
       .command('list', 'List existing identities', listIdentityHandler)
       .command('set', 'Set default identity', setIdentityHandler)
-      .command('register', 'List existing identities', registerIdentityHandler)
+      .command(
+        'register',
+        'Register the default identity',
+        yargs => {
+          yargs
+            .option('print', {
+              type: 'boolean',
+              describe: 'just print out the transaction'
+            })
+            .option('local', {
+              type: 'boolean',
+              describe: 'Using ganache provider'
+            })
+        },
+        registerIdentityHandler
+      )
       .demandCommand()
   })
   .command('view', 'View latest posts', {}, viewPostHandler)
