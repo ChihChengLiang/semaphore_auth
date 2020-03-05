@@ -91,7 +91,9 @@ async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
   const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
 
-  const isInRootHistory = await semaphore.isInRootHistory(root.toString())
+  const isInRootHistory = await semaphore.isInRootHistory(
+    libsemaphore.stringifyBigInts(root)
+  )
   if (!isInRootHistory) throw Error(`Root (${root.toString()}) not in history`)
 }
 
@@ -151,8 +153,7 @@ app.post('/posts/new', async (req, res) => {
       expectedExternalNullifierStr
     )
     validateSignalHash(postBody, signalHash)
-    // TODO: Fix what's wrong here
-    // await validateInRootHistory(root)
+    await validateInRootHistory(root)
     await validateNullifierNotSeen(nullifierHash)
     await validateProof(parsedProof, parsedPublicSignals)
   } catch (err) {

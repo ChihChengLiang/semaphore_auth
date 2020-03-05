@@ -36,7 +36,8 @@ test('should post a new post', async t => {
   const cirDef = require(CIRCUIT_CACHE_PATH)
 
   const circuit = libsemaphore.genCircuit(cirDef)
-  const leaves = await contracts.ProofOfBurn.getLeaves()
+  const id_tree_index = await contracts.Semaphore.id_tree_index()
+  const leaves = await contracts.Semaphore.leaves(id_tree_index)
 
   t.is(leaves[0].toString(), identityCommitment.toString())
 
@@ -84,6 +85,9 @@ test('should post a new post', async t => {
   const stringfiedPublicSignals = JSON.stringify(
     libsemaphore.stringifyBigInts(publicSignals)
   )
+
+  const root = libsemaphore.stringifyBigInts(publicSignals[0])
+  t.true(await contracts.Semaphore.isInRootHistory(root))
 
   await request(app)
     .post('/posts/new')
