@@ -29,6 +29,8 @@ const { defaultIdentityName, hostInfo } = require('./config')
 
 const fetch = require('node-fetch')
 
+const { getProvider } = require('./provider')
+
 const genAuth = async (externalNullifierStr, signalStr) => {
   const spinner = ora({
     discardStdin: false,
@@ -41,7 +43,7 @@ const genAuth = async (externalNullifierStr, signalStr) => {
   spinner.text = 'Loading provingKey'
   const provingKey = fs.readFileSync(PROVING_KEY_PATH)
   spinner.text = 'Get provider'
-  const provider = new ethers.providers.JsonRpcProvider()
+  const provider = getProvider()
 
   const identityName = defaultIdentityName.get()
   spinner.info(`Using defaultIdentityName: ${identityName}`)
