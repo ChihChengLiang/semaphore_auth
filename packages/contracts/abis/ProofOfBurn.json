@@ -20,31 +20,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "_signal_index",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "_publicHash",
-        "type": "bytes"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_hostnameHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "Login",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint256",
         "name": "_identityCommitment",
@@ -57,7 +32,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "getLeaves",
+    "name": "getIdentityCommitments",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -70,38 +45,24 @@
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_hashPublic",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256[2]",
-        "name": "a",
-        "type": "uint256[2]"
-      },
-      {
-        "internalType": "uint256[2][2]",
-        "name": "b",
-        "type": "uint256[2][2]"
-      },
-      {
-        "internalType": "uint256[2]",
-        "name": "c",
-        "type": "uint256[2]"
-      },
-      {
-        "internalType": "uint256[4]",
-        "name": "input",
-        "type": "uint256[4]"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "login",
-    "outputs": [],
+    "name": "identityCommitments",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {

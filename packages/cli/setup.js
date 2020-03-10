@@ -12,10 +12,18 @@ const fetch = require('node-fetch')
 const { defaultIdentityName } = require('./config')
 const { createIdentity } = require('./identities')
 
-const download = async (fromURL, toPath) => {
+const download = async (fromURL, toPath, spinner, name) => {
   return fetch(fromURL).then(res => {
     const dest = fs.createWriteStream(toPath)
+    const contentLength = res.headers.get('Content-Length')
+    let progress = 0
     res.body.pipe(dest)
+    res.body.on('data', chunk => {
+      progress += chunk.length
+      spinner.text = `Downloading ${name} ... ${parseInt(
+        (progress / contentLength) * 100
+      )}%`
+    })
     return new Promise(function (resolve, reject) {
       res.body.on('end', resolve)
       res.body.on('error', reject)
@@ -29,7 +37,7 @@ const checkMaybeDownload = async (name, fromURL, toPath) => {
   } else {
     const spinner = ora(`Downloading ${name}`).start()
 
-    await download(fromURL, toPath)
+    await download(fromURL, toPath, spinner, name)
 
     spinner.succeed(`Downloaded ${name} to ${toPath}`)
   }

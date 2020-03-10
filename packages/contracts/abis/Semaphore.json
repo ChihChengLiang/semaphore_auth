@@ -3,18 +3,13 @@
     "inputs": [
       {
         "internalType": "uint8",
-        "name": "tree_levels",
+        "name": "_treeLevels",
         "type": "uint8"
       },
       {
-        "internalType": "uint256",
-        "name": "zero_value",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "first_external_nullifier",
-        "type": "uint256"
+        "internalType": "uint232",
+        "name": "_firstExternalNullifier",
+        "type": "uint232"
       }
     ],
     "payable": false,
@@ -25,50 +20,51 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "leaf",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "leaf_index",
-        "type": "uint32"
+        "indexed": true,
+        "internalType": "uint232",
+        "name": "externalNullifier",
+        "type": "uint232"
       }
     ],
-    "name": "LeafAdded",
+    "name": "ExternalNullifierAdd",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
+        "indexed": true,
+        "internalType": "uint232",
+        "name": "externalNullifier",
+        "type": "uint232"
       },
       {
-        "indexed": false,
+        "indexed": true,
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
+    "name": "ExternalNullifierChangeStatus",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "uint256",
         "name": "leaf",
         "type": "uint256"
       },
       {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "leaf_index",
-        "type": "uint32"
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "leafIndex",
+        "type": "uint256"
       }
     ],
-    "name": "LeafUpdated",
+    "name": "LeafInsertion",
     "type": "event"
   },
   {
@@ -94,60 +90,37 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "signal",
-        "type": "bytes"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "nullifiers_hash",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "external_nullifier",
-        "type": "uint256"
+        "indexed": true,
+        "internalType": "bool",
+        "name": "newPermission",
+        "type": "bool"
       }
     ],
-    "name": "SignalBroadcast",
+    "name": "PermissionSet",
     "type": "event"
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "left",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "right",
-        "type": "uint256"
-      }
-    ],
-    "name": "HashLeftRight",
+    "inputs": [],
+    "name": "NOTHING_UP_MY_SLEEVE_ZERO",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "mimc_hash",
+        "name": "",
         "type": "uint256"
       }
     ],
     "payable": false,
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": false,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_external_nullifier",
-        "type": "uint256"
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
       }
     ],
     "name": "addExternalNullifier",
@@ -161,28 +134,28 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "signal",
+        "name": "_signal",
         "type": "bytes"
       },
       {
-        "internalType": "uint256[2]",
-        "name": "a",
-        "type": "uint256[2]"
+        "internalType": "uint256[8]",
+        "name": "_proof",
+        "type": "uint256[8]"
       },
       {
-        "internalType": "uint256[2][2]",
-        "name": "b",
-        "type": "uint256[2][2]"
+        "internalType": "uint256",
+        "name": "_root",
+        "type": "uint256"
       },
       {
-        "internalType": "uint256[2]",
-        "name": "c",
-        "type": "uint256[2]"
+        "internalType": "uint256",
+        "name": "_nullifiersHash",
+        "type": "uint256"
       },
       {
-        "internalType": "uint256[4]",
-        "name": "input",
-        "type": "uint256[4]"
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
       }
     ],
     "name": "broadcastSignal",
@@ -192,164 +165,15 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "current_signal_index",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "getExternalNullifierByIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getIdTreeIndex",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getNextExternalNullifierIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_external_nullifier",
-        "type": "uint256"
-      }
-    ],
-    "name": "hasExternalNullifier",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "n",
-        "type": "uint256"
-      }
-    ],
-    "name": "hasNullifier",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "id_tree_index",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
-        "internalType": "uint8",
-        "name": "tree_levels",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "zero_value",
-        "type": "uint256"
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
       }
     ],
-    "name": "init_tree",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "identity_commitment",
-        "type": "uint256"
-      }
-    ],
-    "name": "insertIdentity",
+    "name": "deactivateExternalNullifier",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -359,12 +183,130 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "uint232",
+        "name": "",
+        "type": "uint232"
+      }
+    ],
+    "name": "externalNullifierLinkedList",
+    "outputs": [
+      {
+        "internalType": "uint232",
+        "name": "next",
+        "type": "uint232"
+      },
+      {
+        "internalType": "bool",
+        "name": "exists",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isActive",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "firstExternalNullifier",
+    "outputs": [
+      {
+        "internalType": "uint232",
+        "name": "",
+        "type": "uint232"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
+      }
+    ],
+    "name": "getNextExternalNullifier",
+    "outputs": [
+      {
+        "internalType": "uint232",
+        "name": "",
+        "type": "uint232"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getNumIdentityCommitments",
+    "outputs": [
+      {
         "internalType": "uint256",
-        "name": "n",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "isInRootHistory",
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_identityCommitment",
+        "type": "uint256"
+      }
+    ],
+    "name": "insertIdentity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isBroadcastPermissioned",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
+      }
+    ],
+    "name": "isExternalNullifierActive",
     "outputs": [
       {
         "internalType": "bool",
@@ -394,7 +336,28 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "is_broadcast_permissioned",
+    "name": "lastExternalNullifier",
+    "outputs": [
+      {
+        "internalType": "uint232",
+        "name": "",
+        "type": "uint232"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "nullifierHashHistory",
     "outputs": [
       {
         "internalType": "bool",
@@ -408,45 +371,13 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "leaf_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "leaf",
+    "inputs": [],
+    "name": "numExternalNullifiers",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
-      }
-    ],
-    "name": "leaves",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
       }
     ],
     "payable": false,
@@ -473,28 +404,64 @@
     "inputs": [
       {
         "internalType": "uint256[2]",
-        "name": "a",
+        "name": "_a",
         "type": "uint256[2]"
       },
       {
         "internalType": "uint256[2][2]",
-        "name": "b",
+        "name": "_b",
         "type": "uint256[2][2]"
       },
       {
         "internalType": "uint256[2]",
-        "name": "c",
+        "name": "_c",
         "type": "uint256[2]"
+      }
+    ],
+    "name": "packProof",
+    "outputs": [
+      {
+        "internalType": "uint256[8]",
+        "name": "",
+        "type": "uint256[8]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_signal",
+        "type": "bytes"
       },
       {
-        "internalType": "uint256[4]",
-        "name": "input",
-        "type": "uint256[4]"
+        "internalType": "uint256[8]",
+        "name": "_proof",
+        "type": "uint256[8]"
       },
       {
         "internalType": "uint256",
-        "name": "signal_hash",
+        "name": "_root",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nullifiersHash",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_signalHash",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
       }
     ],
     "name": "preBroadcastCheck",
@@ -513,12 +480,12 @@
     "constant": false,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_external_nullifier",
-        "type": "uint256"
+        "internalType": "uint232",
+        "name": "_externalNullifier",
+        "type": "uint232"
       }
     ],
-    "name": "removeExternalNullifier",
+    "name": "reactivateExternalNullifier",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -535,19 +502,34 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "tree_index",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [],
     "name": "root",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "rootHistory",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "payable": false,
@@ -570,27 +552,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "signals",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -606,38 +567,34 @@
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "old_leaf",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "leaf",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint32",
-        "name": "leaf_index",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "old_path",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "path",
-        "type": "uint256[]"
+        "internalType": "uint256[8]",
+        "name": "_proof",
+        "type": "uint256[8]"
       }
     ],
-    "name": "updateIdentity",
-    "outputs": [],
+    "name": "unpackProof",
+    "outputs": [
+      {
+        "internalType": "uint256[2]",
+        "name": "",
+        "type": "uint256[2]"
+      },
+      {
+        "internalType": "uint256[2][2]",
+        "name": "",
+        "type": "uint256[2][2]"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "",
+        "type": "uint256[2]"
+      }
+    ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

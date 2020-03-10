@@ -4,7 +4,9 @@ const path = require('path')
 const ethers = require('ethers')
 const prompts = require('prompts')
 
-const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
+const {
+  proofOfBurnContract
+} = require('semaphore-auth-contracts/src/contracts')
 const { SEMAPHORE_TREE_DEPTH } = require('semaphore-auth-contracts/constants')
 const {
   EpochbasedExternalNullifier
@@ -53,12 +55,11 @@ const genAuth = async (externalNullifierStr, signalStr) => {
   spinner.start()
   spinner.text = 'Formatting intputs'
   const circuit = genCircuit(cirDef)
-  const semaphoreInstance = semaphoreContract(
+  const proofOfBurnInstance = proofOfBurnContract(
     provider,
-    hostInfo.get().semaphoreAddress
+    hostInfo.get().registrationAddress
   )
-  const id_tree_index = await semaphoreInstance.getIdTreeIndex()
-  const leaves = await semaphoreInstance.leaves(id_tree_index)
+  const leaves = await proofOfBurnInstance.getIdentityCommitments()
 
   if (
     !leaves

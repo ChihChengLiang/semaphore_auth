@@ -8,7 +8,7 @@ const ethers = require('ethers')
 
 const {
   genExternalNullifier,
-  keccak256HexToBigInt,
+  genSignalHash,
   stringifyBigInts,
   parseVerifyingKeyJson,
   verifyProof
@@ -27,9 +27,7 @@ function validateExternalNullifierMatch (actual, externalNullifierStr) {
 
 function validateSignalHash (content, actual) {
   const signalStr = ethers.utils.hashMessage(content)
-  const expected = keccak256HexToBigInt(
-    ethers.utils.hexlify(ethers.utils.toUtf8Bytes(signalStr))
-  )
+  const expected = genSignalHash(ethers.utils.toUtf8Bytes(signalStr))
   if (actual !== expected) {
     throw Error(`Expected signalHash ${expected}, got ${actual}`)
   }

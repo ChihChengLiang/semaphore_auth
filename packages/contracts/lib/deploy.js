@@ -9,10 +9,6 @@ const {
 const linker = require('solc/linker')
 const mimcGenContract = require('circomlib/src/mimcsponge_gencontract.js')
 
-function buildMimcBytecode () {
-  return mimcGenContract.createCode(MIMC_SEED, 220)
-}
-
 const linkBytecode = (solcToLink, deployed) => {
   // Assuming only one reference
   const oldBytecode = solcToLink.evm.bytecode.object
@@ -38,13 +34,14 @@ async function deployContracts ({
   const solcs = await compileContracts()
   if (verbose) console.log('compiled')
 
-  const MiMCSolc = solcs['MerkleTree.sol'].MiMC
   const SemaphoreSolc = solcs['Semaphore.sol'].Semaphore
   const ProofOfBurnSolc = solcs['ProofOfBurn.sol'].ProofOfBurn
 
-  MiMCSolc.evm.bytecode.object = buildMimcBytecode()
-
-  const MiMCContract = ethers.ContractFactory.fromSolidity(MiMCSolc, signer)
+  const MiMCContract = new ethers.ContractFactory(
+    mimcGenContract.abi,
+    mimcGenContract.createCode(MIMC_SEED, 220),
+    signer
+  )
 
   const ProofOfBurnContract = ethers.ContractFactory.fromSolidity(
     ProofOfBurnSolc,
