@@ -5,8 +5,9 @@ const path = require('path')
 const fetch = require('node-fetch')
 
 const SOLC_VERSION = 'v0.5.15+commit.6a57276f'
-const SOLC_CACHE_PATH = path.join(__dirname, '../cache/soljson.js')
-const CONTRACT_DIRS = ['../contracts/', '../semaphore/semaphorejs/contracts/']
+const CACHE_DIR = path.join(__dirname, '../cache')
+const SOLC_CACHE_PATH = path.join(CACHE_DIR, 'soljson.js')
+const CONTRACT_DIRS = ['../contracts/', '../contracts/semaphore/']
 
 const downloadSolc = async version => {
   console.log(`Fetching soljson-${version}.js`)
@@ -23,6 +24,10 @@ const downloadSolc = async version => {
 }
 
 const loadSolc = async version => {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR)
+  }
+
   if (!fs.existsSync(SOLC_CACHE_PATH)) {
     console.log('Solc not found, downloading')
     await downloadSolc(version)
@@ -36,10 +41,11 @@ const loadSources = async contractDirs => {
     const dirAbsolutePath = path.join(__dirname, dirPath)
     const sols = fs.readdirSync(dirAbsolutePath)
     for (const filename of sols) {
-      const content = fs
-        .readFileSync(path.join(dirAbsolutePath, filename))
-        .toString()
-      sources[filename] = { content }
+      const filePath = path.join(dirAbsolutePath, filename)
+      if (fs.lstatSync(filePath).isFile()) {
+        const content = fs.readFileSync(filePath).toString()
+        sources[filename] = { content }
+      }
     }
   }
   return sources

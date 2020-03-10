@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "ava": "^3.4.0",
+    "circomlib": "https://github.com/kobigurk/circomlib.git#347822604996bf25f659f96ee0f02810a1f71bb0",
     "ganache-cli": "^6.9.1",
     "yarn": "^1.22.0"
   },
