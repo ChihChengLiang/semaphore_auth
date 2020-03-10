@@ -5,6 +5,7 @@ import {Semaphore} from "./semaphore/Semaphore.sol";
 contract ProofOfBurn {
     Semaphore public semaphore;
     uint256 public registration_fee;
+    uint256[] public identityCommitments;
 
     event Registered(uint256 _identityCommitment);
 
@@ -20,7 +21,12 @@ contract ProofOfBurn {
         );
 
         semaphore.insertIdentity(_identityCommitment);
+        identityCommitments.push(_identityCommitment);
 
         emit Registered(_identityCommitment);
+    }
+
+    function getIdentityCommitments() public view returns (uint256[] memory) {
+        return identityCommitments;
     }
 }
