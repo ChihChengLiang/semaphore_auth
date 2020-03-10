@@ -99,7 +99,7 @@ test('should post a new post', async t => {
     .set('Accept', 'application/json')
     .expect(200)
     .then(res => {
-      t.is(res.text, 'OK')
+      t.true(res.text.includes('Your article is published!'))
     })
 
   await request(app)

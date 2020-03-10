@@ -14,7 +14,7 @@ const {
   verifyProof
 } = require('libsemaphore')
 
-const { Post } = require('./schema')
+const { SemaphoreLog } = require('./schema')
 
 function validateExternalNullifierMatch (actual, externalNullifierStr) {
   const expected = snarkjs.bigInt(genExternalNullifier(externalNullifierStr))
@@ -25,8 +25,8 @@ function validateExternalNullifierMatch (actual, externalNullifierStr) {
   }
 }
 
-function validateSignalHash (postBody, actual) {
-  const signalStr = ethers.utils.hashMessage(postBody)
+function validateSignalHash (content, actual) {
+  const signalStr = ethers.utils.hashMessage(content)
   const expected = keccak256HexToBigInt(
     ethers.utils.hexlify(ethers.utils.toUtf8Bytes(signalStr))
   )
@@ -35,15 +35,15 @@ function validateSignalHash (postBody, actual) {
   }
 }
 async function validateNullifierNotSeen (nullifierHash) {
-  const results = await Post.query()
+  const results = await SemaphoreLog.query()
     .select('nullifierHash', 'externalNullifierStr', 'id')
     .where('nullifierHash', nullifierHash.toString())
     .catch(console.error)
 
   if (results.length > 0) {
-    const post = results[0]
+    const log = results[0]
     throw new Error(
-      `Spam post: nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${post.externalNullifierStr}" in post id ${post.id}`
+      `nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${log.externalNullifierStr}"`
     )
   }
 }

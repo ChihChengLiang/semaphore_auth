@@ -13,6 +13,23 @@ class Post extends Model {
   static get tableName () {
     return 'posts'
   }
+  static get relationMappings () {
+    return {
+      authData: {
+        relation: Model.HasOneRelation,
+        modelClass: SemaphoreLog,
+        join: {
+          from: 'posts.semaphoreLogId',
+          to: 'semaphore_log.id'
+        }
+      }
+    }
+  }
+}
+class SemaphoreLog extends Model {
+  static get tableName () {
+    return 'semaphore_log'
+  }
 }
 
 async function createSchema () {
@@ -23,14 +40,20 @@ async function createSchema () {
   await knex.schema.createTable('posts', table => {
     table.increments('id').primary()
     table.string('postBody')
+    table.integer('semaphoreLogId')
+    table
+      .dateTime('createdAt')
+      .notNullable()
+      .defaultTo(knex.fn.now())
+  })
 
-    table.string('proof')
-
+  await knex.schema.createTable('semaphore_log', table => {
+    table.increments('id').primary()
     table.string('root')
     table.string('nullifierHash')
     table.string('signalHash')
-    table.string('externalNullifier')
     table.string('externalNullifierStr')
+    table.string('proof')
 
     table
       .dateTime('createdAt')
@@ -39,4 +62,4 @@ async function createSchema () {
   })
 }
 
-module.exports = { createSchema , Post}
+module.exports = { createSchema, Post, SemaphoreLog }

@@ -14,6 +14,8 @@ const {
 
 const { unstringifyBigInts } = require('libsemaphore')
 
+const { SemaphoreLog } = require('./schema')
+
 const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
   configs.SERVER_NAME,
   '/posts/new',
@@ -33,7 +35,7 @@ const requireSemaphoreAuth = async (req, res, next) => {
     signalHash,
     externalNullifier
   ] = parsedPublicSignals
-  const postBody = req.body.postBody
+  const content = req.body.postBody
 
   const expectedExternalNullifierStr = newPostExternalNullifierGen.toString()
 
@@ -42,23 +44,22 @@ const requireSemaphoreAuth = async (req, res, next) => {
       externalNullifier,
       expectedExternalNullifierStr
     )
-    validateSignalHash(postBody, signalHash)
+    validateSignalHash(content, signalHash)
     // await validateInRootHistory(root)
     await validateNullifierNotSeen(nullifierHash)
     await validateProof(parsedProof, parsedPublicSignals)
   } catch (err) {
-    console.log(err)
-    res.status(400).end(`Bad Request:${err.toString()}`)
-    return
+    next(err)
   }
-
-  req.authData = {
+  const semaphoreLog = await SemaphoreLog.query().insert({
     root,
     nullifierHash: nullifierHash.toString(),
-    signalHash,
-    externalNullifier,
-    externalNullifierStr: expectedExternalNullifierStr
-  }
+    externalNullifierStr: expectedExternalNullifierStr,
+    proof: rawProof
+  })
+
+  req.semaphoreLogId = semaphoreLog.id
+
   next()
 }
 

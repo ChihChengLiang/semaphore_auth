@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "ava --timeout=1m"
   },
   "keywords": [],
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "ava": "^3.4.0",
+    "nodemon": "^2.0.2",
     "supertest": "^4.0.2",
     "yarn": "^1.22.0"
   }

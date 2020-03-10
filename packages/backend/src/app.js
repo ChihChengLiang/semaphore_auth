@@ -25,29 +25,19 @@ app.get('/posts', async (req, res) => {
   res.json({ posts })
 })
 
-app.post('/posts/new', requireSemaphoreAuth, async (req, res) => {
-  const {
-    root,
-    nullifierHash,
-    signalHash,
-    externalNullifier,
-    externalNullifierStr
-  } = req.authData
-  await Post.query()
+app.post('/posts/new', requireSemaphoreAuth, async (req, res, next) => {
+  const post = await Post.query()
     .insert({
       postBody: req.body.postBody,
-      proof: req.body.proof,
-      root,
-      nullifierHash,
-      signalHash,
-      externalNullifier,
-      externalNullifierStr
+      semaphoreLogId: req.semaphoreLogId
     })
-    .catch(err => {
-      console.error(err)
-      res.status(500).end(err.toString())
-    })
-  res.send('OK')
+    .catch(next)
+  res.send(`Your article is published! Article id: ${post.id}`)
+})
+
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send(err.toString())
 })
 
 module.exports = app
