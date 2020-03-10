@@ -8,7 +8,8 @@
     "build_verifier": "rm semaphore/semaphorejs/contracts/verifier.sol && npx snarkjs generateverifier --vk semaphore/semaphorejs/build/verification_key.json -v semaphore/semaphorejs/contracts/verifier.sol",
     "deploy": "node ./scripts/deploy.js --verbose",
     "test": "ava",
-    "copyABIs": "node ./scripts/copyABIs.js"
+    "copyABIs": "node ./scripts/copyABIs.js",
+    "ganache": "ganache-cli -a 10 -m='candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' --gasLimit=8800000 --port 8545 -i 1234"
   },
   "author": "",
   "license": "ISC",

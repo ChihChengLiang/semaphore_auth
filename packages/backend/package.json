@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "ava --timeout=1m"
   },
   "keywords": [],
@@ -15,12 +15,14 @@
     "ethers": "^4.0.45",
     "express": "^4.17.1",
     "knex": "^0.20.10",
+    "nodemon": "^2.0.2",
     "objection": "^2.1.3",
     "semaphore-auth-contracts": "file:../contracts",
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
     "ava": "^3.4.0",
+    "nodemon": "^2.0.2",
     "supertest": "^4.0.2",
     "yarn": "^1.22.0"
   }

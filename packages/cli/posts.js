@@ -98,6 +98,8 @@ const viewPostHandler = async () => {
   const posts = await fetch(new URL('./posts', hostInfo.get().hostUrl))
     .then(res => res.json())
     .then(result => result.posts)
+
+  console.clear()
   const response = await prompts({
     type: 'select',
     name: 'value',
@@ -120,13 +122,13 @@ const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
 )
 
 const newPostHandler = async argv => {
+  console.clear()
   const articlePath = argv.article
   const article = fs
     .readFileSync(path.join(process.cwd(), articlePath))
     .toString()
 
   const signalStr = ethers.utils.hashMessage(article)
-  console.info(signalStr)
 
   const externalNullifierStr = newPostExternalNullifierGen.toString()
   console.info('Using externalNullifierStr as:', externalNullifierStr)
