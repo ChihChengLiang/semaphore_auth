@@ -88,6 +88,7 @@ test('should post a new post', async t => {
   const root = libsemaphore.stringifyBigInts(publicSignals[0])
   t.true(await contracts.Semaphore.rootHistory(root))
 
+  let postId
   await request(app)
     .post('/posts/new')
     .send({
@@ -98,11 +99,12 @@ test('should post a new post', async t => {
     .set('Accept', 'application/json')
     .expect(200)
     .then(res => {
-      t.true(res.text.includes('Your article is published!'))
+      t.true(res.body.message.includes('Your article is published!'))
+      postId = res.body.postId
     })
 
   await request(app)
-    .get('/posts')
+    .get(`/posts/${postId}`)
     .expect(200)
-    .then(res => t.is(res.body.posts[0].postBody, postBody))
+    .then(res => t.is(res.body.postBody, postBody))
 })

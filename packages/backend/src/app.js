@@ -2,8 +2,8 @@ const express = require('express')
 const app = express()
 
 const configs = require('./configs')
-const { createSchema, Post } = require('./schema')
-const { requireSemaphoreAuth } = require('./authentication')
+const { createSchema } = require('./schema')
+const { posts } = require('./posts')
 
 createSchema()
 
@@ -20,20 +20,7 @@ app.get('/info', (req, res) => {
   })
 })
 
-app.get('/posts', async (req, res) => {
-  const posts = await Post.query().orderBy('id', 'desc')
-  res.json({ posts })
-})
-
-app.post('/posts/new', requireSemaphoreAuth, async (req, res, next) => {
-  const post = await Post.query()
-    .insert({
-      postBody: req.body.postBody,
-      semaphoreLogId: req.semaphoreLogId
-    })
-    .catch(next)
-  res.send(`Your article is published! Article id: ${post.id}`)
-})
+app.use('/posts', posts)
 
 app.use(function (err, req, res, next) {
   console.error(err.stack)
