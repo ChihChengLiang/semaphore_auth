@@ -45,7 +45,7 @@ const requireSemaphoreAuth = async (req, res, next) => {
       expectedExternalNullifierStr
     )
     validateSignalHash(content, signalHash)
-    // await validateInRootHistory(root)
+    await validateInRootHistory(root)
     await validateNullifierNotSeen(nullifierHash)
     await validateProof(parsedProof, parsedPublicSignals)
   } catch (err) {
