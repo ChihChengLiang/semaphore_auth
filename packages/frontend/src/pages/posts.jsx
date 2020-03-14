@@ -69,10 +69,10 @@ class Posts extends Component {
 
 const PostPage = () => {
   return (
-    <>
+    <div className='container'>
       <NewPost />
       <Posts />
-    </>
+    </div>
   )
 }
 

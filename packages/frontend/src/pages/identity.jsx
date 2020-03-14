@@ -25,14 +25,14 @@ const IdentityManagement = () => {
   }
 
   return (
-    <>
+    <div className='container'>
       <h1>Identity</h1>
       {idExists ? (
         <Identity identity={retrieveId()} />
       ) : (
         <button onClick={createIdentity}>Generate Identity</button>
       )}
-    </>
+    </div>
   )
 }
 
@@ -44,10 +44,10 @@ const IdentityCommitment = () => {
   }
 
   return (
-    <>
+    <div className='container'>
       <p>Identity Commitment</p>
       <button onClick={_register}>Register</button>
-    </>
+    </div>
   )
 }
 
