@@ -3,20 +3,39 @@ import { Component } from 'react'
 
 const Post = props => {
   return (
-    <div className='card'>
-      <div className='card-content'>
+    <article className='media'>
+      <div className='media-content'>
         <div className='content'>{props.post}</div>
       </div>
-    </div>
+    </article>
   )
 }
 
 const NewPost = () => {
   return (
-    <>
-      <textarea></textarea>
-      <button>Create New Post</button>
-    </>
+    <article className='media'>
+      <div className='media-content'>
+        <div className='field'>
+          <p className='control'>
+            <textarea
+              className='textarea'
+              placeholder="What's on your mind"
+              defaultValue={''}
+            />
+          </p>
+        </div>
+        <nav className='level'>
+          <div className='level-left'></div>
+          <div className='level-right'>
+            <div className='level-item'>
+              <a className='button is-primary' disabled={true}>
+                Publish
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </article>
   )
 }
 
@@ -71,6 +90,7 @@ const PostPage = () => {
   return (
     <div className='container'>
       <NewPost />
+      <hr />
       <Posts />
     </div>
   )
