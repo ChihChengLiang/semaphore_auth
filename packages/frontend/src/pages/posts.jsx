@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Component } from 'react'
 
 const Post = props => {
@@ -12,6 +12,12 @@ const Post = props => {
 }
 
 const NewPost = () => {
+  const [postBody, setPostBody] = useState('')
+
+  const publishPost = () => {
+    console.log(postBody)
+  }
+
   return (
     <article className='media'>
       <div className='media-content'>
@@ -21,6 +27,7 @@ const NewPost = () => {
               className='textarea'
               placeholder="What's on your mind"
               defaultValue={''}
+              onChange={e => setPostBody(e.target.value)}
             />
           </p>
         </div>
@@ -28,7 +35,7 @@ const NewPost = () => {
           <div className='level-left'></div>
           <div className='level-right'>
             <div className='level-item'>
-              <a className='button is-primary' disabled={true}>
+              <a className='button is-primary' onClick={publishPost}>
                 Publish
               </a>
             </div>
