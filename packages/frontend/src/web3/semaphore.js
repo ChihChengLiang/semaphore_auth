@@ -15,14 +15,14 @@ import {
 
 const fetchWithoutCache = url => fetch(url, { cache: 'no-store' })
 
-const genProof = async (externalNullifierStr, signalStr, identity, contract) => {
+const genAuth = async (externalNullifierStr, signalStr, identity, contract) => {
   console.log('Downloading circuit')
 
   const [cirDef, provingKey] = await Promise.all([
-    fetchWithoutCache(CIRCUIT_URL)
+    fetchWithoutCache('http://localhost:5566/circuit')
       .then(res => res.json())
       .then(res => res),
-    fetchWithoutCache(PROVING_KEY_URL)
+    fetchWithoutCache('http://localhost:5566/provingKey')
       .then(res => res.arrayBuffer())
       .then(res => new Uint8Array(res))
   ])
@@ -50,3 +50,5 @@ const genProof = async (externalNullifierStr, signalStr, identity, contract) => 
   }
   return requestData
 }
+
+export default genAuth

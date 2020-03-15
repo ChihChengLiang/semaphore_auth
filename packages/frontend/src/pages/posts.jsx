@@ -1,21 +1,58 @@
 import React, { useState } from 'react'
 import { Component } from 'react'
 
-const Post = props => {
+import genAuth from '../web3/semaphore'
+import { EpochbasedExternalNullifier } from 'semaphore-auth-contracts/lib/externalNullifier'
+import { retrieveId } from '../storage'
+import { ethers } from 'ethers'
+
+const Post = ({ post }) => {
   return (
     <article className='media'>
       <div className='media-content'>
-        <div className='content'>{props.post}</div>
+        <div className='content'>
+          <strong>{post.id}</strong>
+          <p>{post.postBody}</p>
+          <small>{post.createdAt}</small>
+        </div>
       </div>
     </article>
   )
 }
 
-const NewPost = () => {
+const NewPost = ({ registrationInfo, contract }) => {
   const [postBody, setPostBody] = useState('')
 
-  const publishPost = () => {
+  const publishPost = async () => {
     console.log(postBody)
+
+    const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
+      registrationInfo.serverName,
+      '/posts/new',
+      300 * 1000 // rate limit to 30 seconds
+    )
+    const signalStr = ethers.utils.hashMessage(postBody)
+
+    const identity = retrieveId()
+    const externalNullifierStr = newPostExternalNullifierGen.toString()
+
+    const { proof, publicSignals } = await genAuth(
+      externalNullifierStr,
+      signalStr,
+      identity,
+      contract
+    )
+
+    await fetch(new URL('./posts/new', 'http://localhost:5566'), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ postBody, proof, publicSignals })
+    })
+      .then(res => res.text())
+      .then(result => console.info(result))
   }
 
   return (
@@ -57,13 +94,13 @@ class Posts extends Component {
   }
 
   componentDidMount () {
-    fetch('https://baconipsum.com/api/?type=meat-and-filler')
+    fetch('http://localhost:5566/posts/')
       .then(res => res.json())
       .then(
         result => {
           this.setState({
             isLoaded: true,
-            items: result
+            result
           })
         },
         error => {
@@ -76,7 +113,7 @@ class Posts extends Component {
   }
 
   render () {
-    const { error, isLoaded, items } = this.state
+    const { error, isLoaded, result } = this.state
     if (error) {
       return <div>Error: {error.message}</div>
     } else if (!isLoaded) {
@@ -84,8 +121,8 @@ class Posts extends Component {
     } else {
       return (
         <ul>
-          {items.map((item, index) => (
-            <Post key={index} post={item} />
+          {result.results.map((post, index) => (
+            <Post key={index} post={post} />
           ))}
         </ul>
       )

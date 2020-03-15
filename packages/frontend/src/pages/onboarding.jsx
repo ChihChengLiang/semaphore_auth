@@ -31,9 +31,9 @@ const OnBoarding = () => {
     network: null,
     registrationStyle: null,
     registrationAddress: null,
-    semaphoreAddress: null,
-    registrationContract: null
+    semaphoreAddress: null
   })
+  const [contract, setContract] = useState(null)
   const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect(() => {
@@ -41,6 +41,7 @@ const OnBoarding = () => {
       const registrationInfo = await fetch('http://localhost:5566/info').then(
         res => res.json()
       )
+      console.log(registrationInfo)
 
       setRegistrationInfo(registrationInfo)
       if (context.active) {
@@ -52,7 +53,7 @@ const OnBoarding = () => {
           ProofOfBurnABI,
           provider.getSigner()
         )
-        setRegistrationInfo({ registrationContract: ProofOfBurn })
+        setContract(ProofOfBurn)
 
         if (await checkRegistered(ProofOfBurn)) {
           setIsRegistered(true)
@@ -66,17 +67,19 @@ const OnBoarding = () => {
     return <IdentityPage />
   } else if (!context.active) {
     return <Activation />
-  } else if (!registrationInfo.registrationContract) {
+  } else if (!registrationInfo.registrationAddress) {
     return <p>Loading Registration Information</p>
+  } else if (!contract) {
+    return <p>Building contract</p>
   } else if (!isRegistered) {
     return (
       <>
-        <ProofOfBurn contract={registrationInfo.registrationContract} />
-        <IdentityCommitment contract={registrationInfo.registrationContract} />
+        <ProofOfBurn contract={contract} />
+        <IdentityCommitment contract={contract} />
       </>
     )
   } else {
-    return <NewPost contract={registrationInfo.registrationContract} />
+    return <NewPost registrationInfo={registrationInfo} contract={contract} />
   }
 }
 
