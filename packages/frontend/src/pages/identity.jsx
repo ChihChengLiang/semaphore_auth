@@ -3,12 +3,9 @@ import {
   genIdentityCommitment,
   serialiseIdentity
 } from 'libsemaphore'
-import register from '../web3/registration'
-import { useState } from 'react'
 import { hasId, retrieveId, storeId } from '../storage'
-import React from 'react'
-import { useWeb3Context } from 'web3-react'
-import { ServerInfo } from '../components/contracts'
+import React, { useState, useEffect } from 'react'
+import { ethers } from 'ethers'
 
 const Identity = props => {
   return (
@@ -36,7 +33,6 @@ const IdentityPage = () => {
       {idExists ? (
         <>
           <Identity identity={retrieveId()} />
-          <IdentityCommitment />
         </>
       ) : (
         <button onClick={createIdentity} className='button is-primary'>
@@ -47,20 +43,45 @@ const IdentityPage = () => {
   )
 }
 
-const IdentityCommitment = () => {
-  const context = useWeb3Context()
+const IdentityCommitment = ({ contract, setRegisteredParent }) => {
+  const [isRegistered, setRegistered] = useState(false)
+
   const _register = async () => {
     const identityCommitment = genIdentityCommitment(retrieveId())
-    await register(context, identityCommitment)
+    const registration_fee = await contract.registration_fee()
+    const tx = await contract.register(identityCommitment.toString(), {
+      value: registration_fee
+    })
+    const receipt = await tx
+    console.log(receipt)
   }
+
+  useEffect(() => {
+    const checkRegistered = async () => {
+      const commitments = await contract.getIdentityCommitments()
+      const identityCommitment = genIdentityCommitment(retrieveId())
+      if (
+        commitments
+          .map(x => x.toString())
+          .includes(identityCommitment.toString())
+      ) {
+        setRegistered(true)
+        setRegisteredParent(true)
+      }
+    }
+    checkRegistered()
+  }, [])
 
   return (
     <div className='content'>
-      <ServerInfo />
       <h3>Identity Commitment</h3>
-      <button onClick={_register} className='button is-primary'>
-        Register
-      </button>
+      {isRegistered ? (
+        <p>You are registered</p>
+      ) : (
+        <button onClick={_register} className='button is-primary'>
+          Register
+        </button>
+      )}
     </div>
   )
 }

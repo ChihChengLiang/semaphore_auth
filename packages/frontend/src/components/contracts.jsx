@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import ProofOfBurnABI from 'semaphore-auth-contracts/abis/ProofOfBurn.json'
-import SemaphoreABI from 'semaphore-auth-contracts/abis/Semaphore.json'
 import { ethers } from 'ethers'
 import { useWeb3Context } from 'web3-react'
+import { IdentityCommitment } from '../pages/identity'
 
-const ServerInfo = () => {
+const RegistrationInfo = ({ setRegisteredParent }) => {
   const [data, setData] = useState({
     serverName: null,
     network: null,
@@ -17,18 +17,18 @@ const ServerInfo = () => {
 
   useEffect(() => {
     const fetchAndBuildContract = async () => {
-      const serverInfo = await fetch('http://localhost:5566/info').then(res =>
-        res.json()
+      const registrationInfo = await fetch('http://localhost:5566/info').then(
+        res => res.json()
       )
 
-      setData(serverInfo)
+      setData(registrationInfo)
       const provider = new ethers.providers.Web3Provider(
         context.library.provider
       )
       const ProofOfBurn = new ethers.Contract(
-        serverInfo.registrationAddress,
+        registrationInfo.registrationAddress,
         ProofOfBurnABI,
-        provider
+        provider.getSigner()
       )
       setData({ registrationContract: ProofOfBurn })
     }
@@ -38,9 +38,15 @@ const ServerInfo = () => {
   return (
     <div className='box'>
       {data.registrationContract ? (
-        <ProofOfBurn contract={data.registrationContract} />
+        <>
+          <ProofOfBurn contract={data.registrationContract} />
+          <IdentityCommitment
+            contract={data.registrationContract}
+            setRegisteredParent={setRegisteredParent}
+          />
+        </>
       ) : (
-        <p>Loading</p>
+        <p>Loading...</p>
       )}
     </div>
   )
@@ -65,7 +71,7 @@ const ProofOfBurn = ({ contract }) => {
   }, [])
 
   return data.address ? (
-    <div className='box'>
+    <div className='content'>
       <p>address: {data.address}</p>
       <p>
         Registration Fee: {ethers.utils.formatEther(data.registrationFee)} ETH
@@ -77,4 +83,4 @@ const ProofOfBurn = ({ contract }) => {
   )
 }
 
-export { ServerInfo, ProofOfBurn }
+export { RegistrationInfo, ProofOfBurn }

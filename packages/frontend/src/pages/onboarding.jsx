@@ -1,9 +1,10 @@
 import React from 'react'
-import { IdentityPage, IdentityCommitment } from './identity'
+import { IdentityPage } from './identity'
 import { NewPost } from './posts'
 import { hasId } from '../storage'
 import { Activation } from '../web3'
 import { withWeb3 } from 'web3-react'
+import { RegistrationInfo } from '../components/contracts'
 
 // Generate an Identity
 // Activate Metamask
@@ -19,8 +20,7 @@ class OnBoarding extends React.Component {
     this.state = {
       isLoaded: false,
       hasIdentity: false,
-      hasCommitment: false,
-      snarksDownloaded: false
+      hasRegistered: false,
     }
   }
 
@@ -36,8 +36,7 @@ class OnBoarding extends React.Component {
     const {
       isLoaded,
       hasIdentity,
-      hasCommitment,
-      snarksDownloaded
+      hasRegistered
     } = this.state
     if (!isLoaded) {
       return <Loading />
@@ -45,10 +44,14 @@ class OnBoarding extends React.Component {
       return <IdentityPage />
     } else if (!this.props.web3.active) {
       return <Activation />
-    } else if (!hasCommitment) {
-      return <IdentityCommitment />
-    } else if (!snarksDownloaded) {
-      return <p>We'll need to download some snarks</p>
+    } else if (!hasRegistered) {
+      return (
+        <RegistrationInfo
+          setRegisteredParent={() => {
+            this.setState({ hasRegistered: true })
+          }}
+        />
+      )
     } else {
       return <NewPost />
     }
