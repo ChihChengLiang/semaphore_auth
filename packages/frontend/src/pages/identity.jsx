@@ -43,7 +43,7 @@ const IdentityPage = () => {
   )
 }
 
-const IdentityCommitment = ({ contract, setRegisteredParent }) => {
+const IdentityCommitment = ({ contract }) => {
   const [isRegistered, setRegistered] = useState(false)
 
   const _register = async () => {
@@ -66,7 +66,6 @@ const IdentityCommitment = ({ contract, setRegisteredParent }) => {
           .includes(identityCommitment.toString())
       ) {
         setRegistered(true)
-        setRegisteredParent(true)
       }
     }
     checkRegistered()
