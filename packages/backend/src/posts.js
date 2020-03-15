@@ -9,13 +9,17 @@ posts.get('/', async (req, res) => {
   //   results: [{Post}]
   //   total: int
   // }
-  const result = await Post.query().page(0, PAGESIZE)
+  const result = await Post.query()
+    .orderBy('id', 'desc')
+    .page(0, PAGESIZE)
   res.json(result)
 })
 
 posts.get('/page/:pageNum', async (req, res) => {
   const pageNum = req.params.pageNum
-  const result = await Post.query().page(pageNum, PAGESIZE)
+  const result = await Post.query()
+    .orderBy('id', 'desc')
+    .page(pageNum, PAGESIZE)
   res.json(result)
 })
 
