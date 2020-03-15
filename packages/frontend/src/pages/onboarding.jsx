@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { IdentityPage } from './identity'
+import { CreateIdentity } from './identity'
 import { NewPost } from './posts'
 import { hasId, retrieveId } from '../storage'
 import { Activation } from '../web3'
@@ -26,6 +26,7 @@ const checkRegistered = async contract => {
 
 const OnBoarding = () => {
   const context = useWeb3Context()
+  const [idExists, setIdExists] = useState(hasId())
   const [registrationInfo, setRegistrationInfo] = useState({
     serverName: null,
     network: null,
@@ -63,8 +64,8 @@ const OnBoarding = () => {
     fetchRegistrationInfo()
   }, [context.active])
 
-  if (!hasId()) {
-    return <IdentityPage />
+  if (!idExists) {
+    return <CreateIdentity setIdExists={setIdExists} />
   } else if (!context.active) {
     return <Activation />
   } else if (!registrationInfo.registrationAddress) {

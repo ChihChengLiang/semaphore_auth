@@ -7,13 +7,13 @@ import { hasId, retrieveId, storeId } from '../storage'
 import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 
-const Identity = props => {
+const Identity = ({ identity }) => {
   return (
     <div className='box is-multiline has-background-light'>
       <div className='content'>
         <h3>This is your identity</h3>
         <code style={{ wordWrap: 'break-word' }}>
-          {serialiseIdentity(props.identity)}
+          {serialiseIdentity(identity)}
         </code>
       </div>
     </div>
@@ -21,7 +21,14 @@ const Identity = props => {
 }
 
 const IdentityPage = () => {
-  const [idExists, setIdExists] = useState(hasId())
+  if (hasId()) {
+    return <Identity identity={retrieveId()} />
+  } else {
+    return <p> No Identity Yet</p>
+  }
+}
+
+const CreateIdentity = ({ setIdExists }) => {
   function createIdentity () {
     const identity = genIdentity()
     storeId(identity)
@@ -30,15 +37,9 @@ const IdentityPage = () => {
 
   return (
     <div className='container'>
-      {idExists ? (
-        <>
-          <Identity identity={retrieveId()} />
-        </>
-      ) : (
-        <button onClick={createIdentity} className='button is-primary'>
-          Generate Identity
-        </button>
-      )}
+      <button onClick={createIdentity} className='button is-primary'>
+        Generate Identity
+      </button>
     </div>
   )
 }
@@ -85,4 +86,4 @@ const IdentityCommitment = ({ contract }) => {
   )
 }
 
-export { IdentityPage, IdentityCommitment }
+export { IdentityPage, IdentityCommitment, CreateIdentity }
