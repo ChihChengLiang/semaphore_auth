@@ -3,17 +3,28 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import { initStorage } from './storage'
-// import Web3Provider from 'web3-react'
+import Web3Provider from 'web3-react'
 
-// import { Activation, MetaMask } from './web3'
+import { Activation, MetaMask } from './web3'
 
-import PostPage from './pages/posts'
+import { Posts } from './pages/posts'
 import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import './custom.scss'
+import Onboarding from './pages/onboarding'
+
+const Home = () => {
+  return (
+    <div className='container'>
+      <Onboarding />
+      <hr />
+      <Posts />
+    </div>
+  )
+}
 
 const links = [
-  { path: '/posts', title: 'Posts', component: <PostPage /> },
+  { path: '/posts', title: 'Posts', component: <Home /> },
   {
     path: '/identity',
     title: 'Identity',
@@ -59,13 +70,11 @@ const Layout = ({ children }) => (
 const App = () => {
   initStorage()
   return (
-    <Layout>
-      <RouteTabs />
-      {/* <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'> */}
-      {/* <Activation /> */}
-
-      {/* </Web3Provider> */}
-    </Layout>
+    <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'>
+      <Layout>
+        <RouteTabs />
+      </Layout>
+    </Web3Provider>
   )
 }
 

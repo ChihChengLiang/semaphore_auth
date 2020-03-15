@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { Connectors, useWeb3Context } from 'web3-react'
 const { InjectedConnector } = Connectors
@@ -7,13 +7,19 @@ const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
 
 const Activation = () => {
   const context = useWeb3Context()
-  useEffect(() => {
+  const connectMetaMask = () => {
     context.setFirstValidConnector(['MetaMask'])
-  }, [])
+  }
 
   if (!context.active && !context.error) {
-    // loading
-    return <p>Loading</p>
+    return (
+      <>
+        <p>Please connect to MetaMask</p>
+        <button className='button is-primary' onClick={connectMetaMask}>
+          Connect MetaMask
+        </button>
+      </>
+    )
   } else if (context.error) {
     //error
     return <p>Error {context.error.toString()}</p>
@@ -22,9 +28,7 @@ const Activation = () => {
     return (
       <>
         <h1>Loading sucess</h1>
-        {conext => {
-          return <p>{conext.account}</p>
-        }}
+        <p>{context.account}</p>
       </>
     )
   }

@@ -86,14 +86,4 @@ class Posts extends Component {
   }
 }
 
-const PostPage = () => {
-  return (
-    <div className='container'>
-      <NewPost />
-      <hr />
-      <Posts />
-    </div>
-  )
-}
-
-export default PostPage
+export { Posts, NewPost }
