@@ -9,21 +9,16 @@ import { initStorage } from './storage'
 // import { Activation, MetaMask } from './web3'
 
 import PostPage from './pages/posts'
-import { IdentityCommitment, IdentityManagement } from './pages/identity'
+import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import './custom.scss'
 
 const links = [
   { path: '/posts', title: 'Posts', component: <PostPage /> },
   {
-    path: '/identityCommitment',
-    title: 'IdentityCommitment',
-    component: <IdentityCommitment />
-  },
-  {
-    path: '/identityManagement',
-    title: 'IdentityManagement',
-    component: <IdentityManagement />
+    path: '/identity',
+    title: 'Identity',
+    component: <IdentityPage />
   }
 ]
 
@@ -55,7 +50,9 @@ const RouteTabs = () => (
 const Layout = ({ children }) => (
   <section className='section'>
     <div className='columns'>
-      <div className='column is-half is-centered'>{children}</div>
+      <div className='column is-half is-offset-one-quarter'>
+        <div className='box'>{children}</div>
+      </div>
     </div>
   </section>
 )

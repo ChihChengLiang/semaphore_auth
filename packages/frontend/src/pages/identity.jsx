@@ -1,4 +1,8 @@
-import { genIdentity, genIdentityCommitment } from 'libsemaphore'
+import {
+  genIdentity,
+  genIdentityCommitment,
+  serialiseIdentity
+} from 'libsemaphore'
 import register from '../web3/registration'
 import { useState } from 'react'
 import { hasId, retrieveId, storeId } from '../storage'
@@ -7,16 +11,18 @@ import { Connectors, useWeb3Context } from 'web3-react'
 
 const Identity = props => {
   return (
-    <>
-      <p>pubkey: {props.identity.keypair.pubKey.map(x => x.toString())}</p>
-      <p>privatekey: {props.identity.keypair.privKey}</p>
-      <p>identityNullifier: {props.identity.identityNullifier.toString()}</p>
-      <p>identityTrapdoor: {props.identity.identityTrapdoor.toString()}</p>
-    </>
+    <div className='box is-multiline has-background-light'>
+      <div className='content'>
+        <h3>This is your identity</h3>
+        <code style={{ wordWrap: 'break-word' }}>
+          {serialiseIdentity(props.identity)}
+        </code>
+      </div>
+    </div>
   )
 }
 
-const IdentityManagement = () => {
+const IdentityPage = () => {
   const [idExists, setIdExists] = useState(hasId())
   function createIdentity () {
     const identity = genIdentity()
@@ -26,11 +32,13 @@ const IdentityManagement = () => {
 
   return (
     <div className='container'>
-      <h1>Identity</h1>
       {idExists ? (
-        <Identity identity={retrieveId()} />
+        <>
+          <Identity identity={retrieveId()} />
+          <IdentityCommitment />
+        </>
       ) : (
-        <button onClick={createIdentity}>Generate Identity</button>
+        <button onClick={createIdentity} className='button is-primary'>Generate Identity</button>
       )}
     </div>
   )
@@ -44,11 +52,11 @@ const IdentityCommitment = () => {
   }
 
   return (
-    <div className='container'>
-      <p>Identity Commitment</p>
-      <button onClick={_register}>Register</button>
+    <div className='content'>
+      <h3>Identity Commitment</h3>
+      <button onClick={_register} className='button is-primary'>Register</button>
     </div>
   )
 }
 
-export { IdentityCommitment, IdentityManagement }
+export { IdentityPage }

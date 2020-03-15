@@ -22,7 +22,7 @@
     "bulma": "^0.8.0",
     "dotenv": "^8.2.0",
     "ethers": "^4",
-    "libsemaphore": "0.0.17",
+    "libsemaphore": "1.0.14",
     "react": "^16.8",
     "react-dom": "^16.8",
     "react-router": "^5.1.2",
