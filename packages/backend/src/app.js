@@ -7,6 +7,12 @@ const { posts } = require('./posts')
 
 createSchema()
 
+if (process.env.NODE_ENV !== 'production') {
+  const cors = require('cors')
+  app.use(cors())
+  console.log('CORS enabled')
+}
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { IdentityPage } from './identity'
+import { IdentityPage, IdentityCommitment } from './identity'
 import { NewPost } from './posts'
 import { hasId } from '../storage'
 import { Activation } from '../web3'
@@ -46,7 +46,7 @@ class OnBoarding extends React.Component {
     } else if (!this.props.web3.active) {
       return <Activation />
     } else if (!hasCommitment) {
-      return <p>Please send identity commitment tx</p>
+      return <IdentityCommitment />
     } else if (!snarksDownloaded) {
       return <p>We'll need to download some snarks</p>
     } else {

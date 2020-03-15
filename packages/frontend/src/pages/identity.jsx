@@ -7,7 +7,8 @@ import register from '../web3/registration'
 import { useState } from 'react'
 import { hasId, retrieveId, storeId } from '../storage'
 import React from 'react'
-import { Connectors, useWeb3Context } from 'web3-react'
+import { useWeb3Context } from 'web3-react'
+import { ServerInfo } from '../components/contracts'
 
 const Identity = props => {
   return (
@@ -38,7 +39,9 @@ const IdentityPage = () => {
           <IdentityCommitment />
         </>
       ) : (
-        <button onClick={createIdentity} className='button is-primary'>Generate Identity</button>
+        <button onClick={createIdentity} className='button is-primary'>
+          Generate Identity
+        </button>
       )}
     </div>
   )
@@ -53,10 +56,13 @@ const IdentityCommitment = () => {
 
   return (
     <div className='content'>
+      <ServerInfo />
       <h3>Identity Commitment</h3>
-      <button onClick={_register} className='button is-primary'>Register</button>
+      <button onClick={_register} className='button is-primary'>
+        Register
+      </button>
     </div>
   )
 }
 
-export { IdentityPage }
+export { IdentityPage, IdentityCommitment }
