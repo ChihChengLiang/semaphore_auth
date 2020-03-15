@@ -2,7 +2,6 @@ import React from 'react'
 
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
-// import Nav from './nav'
 import { initStorage } from './storage'
 // import Web3Provider from 'web3-react'
 
