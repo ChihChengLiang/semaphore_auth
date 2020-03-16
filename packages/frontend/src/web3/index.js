@@ -14,7 +14,10 @@ const Activation = () => {
   if (!context.active && !context.error) {
     return (
       <>
-        <p>Please connect to MetaMask</p>
+        <p>
+          Please connect to MetaMask, we are about to read/write some
+          information on the contract.
+        </p>
         <button className='button is-primary' onClick={connectMetaMask}>
           Connect MetaMask
         </button>

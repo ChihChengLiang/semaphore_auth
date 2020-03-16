@@ -20,12 +20,19 @@ const ProofOfBurn = ({ contract }) => {
   }, [])
 
   return data.address ? (
-    <div className='content'>
-      <p>address: {data.address}</p>
-      <p>
-        Registration Fee: {ethers.utils.formatEther(data.registrationFee)} ETH
-      </p>
-      <p>Number of Registration: {data.commitments}</p>
+    <div className='media'>
+      <div className='media-content'>
+        <p>
+          Address: <small>{data.address}</small>
+        </p>
+        <p>
+          Registration Fee:{' '}
+          <strong>{ethers.utils.formatEther(data.registrationFee)} ETH</strong>
+        </p>
+        <p>
+          <strong>{data.commitments}</strong> Members in the group
+        </p>
+      </div>
     </div>
   ) : (
     <p>Loading...</p>

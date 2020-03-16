@@ -5,10 +5,11 @@ import { hasId, retrieveId } from '../storage'
 import { Activation } from '../web3'
 import { ProofOfBurn } from '../components/contracts'
 import { useWeb3Context } from 'web3-react'
-import { IdentityCommitment } from '../pages/identity'
+import { Registration } from '../pages/identity'
 import ProofOfBurnABI from 'semaphore-auth-contracts/abis/ProofOfBurn.json'
 import { ethers } from 'ethers'
 import { genIdentityCommitment } from 'libsemaphore'
+import register from '../web3/registration'
 
 // Generate an Identity
 // Activate Metamask
@@ -36,6 +37,16 @@ const OnBoarding = () => {
   })
   const [contract, setContract] = useState(null)
   const [isRegistered, setIsRegistered] = useState(false)
+
+  const _register = async () => {
+    const identityCommitment = genIdentityCommitment(retrieveId())
+    const tx = await register(contract, identityCommitment)
+
+    const receipt = await tx.wait()
+    if (receipt.status === 1) {
+      setIsRegistered(true)
+    }
+  }
 
   useEffect(() => {
     const fetchRegistrationInfo = async () => {
@@ -74,10 +85,11 @@ const OnBoarding = () => {
     return <p>Building contract</p>
   } else if (!isRegistered) {
     return (
-      <>
-        <ProofOfBurn contract={contract} />
-        <IdentityCommitment contract={contract} />
-      </>
+      <Registration
+        contract={contract}
+        isRegistered={isRegistered}
+        register={_register}
+      />
     )
   } else {
     return <NewPost registrationInfo={registrationInfo} contract={contract} />
