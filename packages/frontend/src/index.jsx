@@ -7,25 +7,15 @@ import Web3Provider from 'web3-react'
 
 import { Activation, MetaMask } from './web3'
 
-import { Posts } from './pages/posts'
 import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import './custom.scss'
-import Onboarding from './pages/onboarding'
-import { ToastProvider } from 'react-toast-notifications'
 
-const Home = () => {
-  return (
-    <div className='container'>
-      <Onboarding />
-      <hr />
-      <Posts />
-    </div>
-  )
-}
+import { ToastProvider } from 'react-toast-notifications'
+import Group from './pages/group'
 
 const links = [
-  { path: '/posts', title: 'Posts', component: <Home /> },
+  { path: '/', title: 'Posts', component: <Group /> },
   {
     path: '/identity',
     title: 'Identity',
