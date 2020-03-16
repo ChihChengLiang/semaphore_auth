@@ -7,10 +7,10 @@ import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 
-const Post = ({ post }) => {
+const Post = ({ post, isLight }) => {
   return (
     <article className='media'>
-      <div className='media-content'>
+      <div className={`media-content ${isLight ? 'is-light' : ''}`}>
         <div className='content'>
           <strong>{post.id}</strong>
           <p>{post.postBody}</p>
@@ -21,7 +21,7 @@ const Post = ({ post }) => {
   )
 }
 
-const NewPost = ({ registrationInfo, contract }) => {
+const NewPost = ({ registrationInfo, contract, onPublish }) => {
   const [postBody, setPostBody] = useState('')
 
   const publishPost = async () => {
@@ -44,9 +44,8 @@ const NewPost = ({ registrationInfo, contract }) => {
       contract
     )
 
-    await fetchPostNewPost(postBody, proof, publicSignals).then(result =>
-      console.info(result)
-    )
+    const result = await fetchPostNewPost(postBody, proof, publicSignals)
+    onPublish(result)
   }
 
   return (
@@ -114,7 +113,11 @@ class Posts extends Component {
       return (
         <ul>
           {result.results.map((post, index) => (
-            <Post key={index} post={post} />
+            <Post
+              key={index}
+              post={post}
+              isLight={this.props.newPostId === post.id}
+            />
           ))}
         </ul>
       )

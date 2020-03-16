@@ -30,6 +30,7 @@ const Group = () => {
     semaphoreAddress: null
   })
   const [contract, setContract] = useState(null)
+  const [newPostId, setNewPostId] = useState(null)
 
   useEffect(() => {
     let didCancel = false
@@ -83,6 +84,19 @@ const Group = () => {
       })
     }
   }
+  const onPublish = result => {
+    console.log(result)
+    if (result.error) {
+      addToast(result.error, {
+        appearance: 'error'
+      })
+    } else {
+      addToast(result.message, {
+        appearance: 'success'
+      })
+      setNewPostId(result.postId)
+    }
+  }
 
   let onboarding = null
   if (!idExists) {
@@ -97,13 +111,17 @@ const Group = () => {
   return (
     <div className='container'>
       {isRegistered ? (
-        <NewPost contract={contract} registrationInfo={registrationInfo} />
+        <NewPost
+          contract={contract}
+          registrationInfo={registrationInfo}
+          onPublish={onPublish}
+        />
       ) : (
         onboarding
       )}
 
       <hr />
-      <Posts />
+      <Posts newPostId={newPostId} />
     </div>
   )
 }
