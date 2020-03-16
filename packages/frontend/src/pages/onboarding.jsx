@@ -10,6 +10,7 @@ import { ethers } from 'ethers'
 import { genIdentityCommitment } from 'libsemaphore'
 import register from '../web3/registration'
 import { fetchGetRegistrationInfo } from '../utils/fetch'
+import { useToasts } from 'react-toast-notifications'
 
 // Generate an Identity
 // Activate Metamask
@@ -27,6 +28,7 @@ const checkRegistered = async contract => {
 
 const OnBoarding = () => {
   const context = useWeb3Context()
+  const { addToast } = useToasts()
   const [idExists, setIdExists] = useState(hasId())
   const [registrationInfo, setRegistrationInfo] = useState({
     serverName: null,
@@ -38,13 +40,26 @@ const OnBoarding = () => {
   const [contract, setContract] = useState(null)
   const [isRegistered, setIsRegistered] = useState(false)
 
+  const onIdCreated = () => {
+    addToast('Identity created Successfully!', { appearance: 'success' })
+    setIdExists(true)
+  }
+
   const _register = async () => {
     const identityCommitment = genIdentityCommitment(retrieveId())
     const tx = await register(contract, identityCommitment)
+    addToast(`Registration transaction sent! Transaction ID: ${tx.hash}`, {
+      appearance: 'info'
+    })
 
     const receipt = await tx.wait()
     if (receipt.status === 1) {
+      addToast('Registration Success!', { appearance: 'success' })
       setIsRegistered(true)
+    } else {
+      addToast(`Registration failed`, {
+        appearance: 'error'
+      })
     }
   }
 
@@ -74,7 +89,7 @@ const OnBoarding = () => {
   }, [context.active])
 
   if (!idExists) {
-    return <CreateIdentity setIdExists={setIdExists} />
+    return <CreateIdentity onCreated={onIdCreated} />
   } else if (!context.active) {
     return <Activation />
   } else if (!registrationInfo.registrationAddress) {

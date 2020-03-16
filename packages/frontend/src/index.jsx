@@ -12,6 +12,7 @@ import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import './custom.scss'
 import Onboarding from './pages/onboarding'
+import { ToastProvider } from 'react-toast-notifications'
 
 const Home = () => {
   return (
@@ -71,9 +72,11 @@ const App = () => {
   initStorage()
   return (
     <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'>
-      <Layout>
-        <RouteTabs />
-      </Layout>
+      <ToastProvider>
+        <Layout>
+          <RouteTabs />
+        </Layout>
+      </ToastProvider>
     </Web3Provider>
   )
 }

@@ -30,11 +30,11 @@ const IdentityPage = () => {
   }
 }
 
-const CreateIdentity = ({ setIdExists }) => {
+const CreateIdentity = ({ onCreated }) => {
   function createIdentity () {
     const identity = genIdentity()
     storeId(identity)
-    setIdExists(true)
+    onCreated()
   }
 
   return (
