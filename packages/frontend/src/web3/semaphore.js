@@ -15,8 +15,9 @@ import {
 
 const fetchWithoutCache = url => fetch(url, { cache: 'no-store' })
 
-const genAuth = async (externalNullifierStr, signalStr, identity, contract) => {
+const genAuth = async (externalNullifierStr, signalStr, identity, contract, progressCallback) => {
   console.log('Downloading circuit')
+  progressCallback('Downloading circuit and proving key')
 
   const [cirDef, provingKey] = await Promise.all([
     fetchWithoutCache('http://localhost:5566/circuit')
@@ -27,10 +28,14 @@ const genAuth = async (externalNullifierStr, signalStr, identity, contract) => {
       .then(res => new Uint8Array(res))
   ])
 
+  progressCallback('Circuit and proving key downloaded')
+
   const circuit = genCircuit(cirDef)
   const leaves = await contract.getIdentityCommitments()
 
   const externalNullifier = genExternalNullifier(externalNullifierStr)
+
+  progressCallback('Generating Witness')
 
   const { witness } = await genWitness(
     signalStr,
@@ -40,6 +45,8 @@ const genAuth = async (externalNullifierStr, signalStr, identity, contract) => {
     SEMAPHORE_TREE_DEPTH,
     externalNullifier
   )
+
+  progressCallback('Generating proof and public signals')
 
   const proof = await genProof(witness, provingKey)
   const publicSignals = genPublicSignals(witness, circuit)

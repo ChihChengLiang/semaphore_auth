@@ -6,6 +6,7 @@ import { EpochbasedExternalNullifier } from 'semaphore-auth-contracts/lib/extern
 import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
+import { useToasts } from 'react-toast-notifications'
 
 const Post = ({ post, isNew }) => {
   return (
@@ -25,6 +26,21 @@ const Post = ({ post, isNew }) => {
 const NewPost = ({ registrationInfo, contract, onPublish }) => {
   const [postBody, setPostBody] = useState('')
 
+  const { addToast, updateToast } = useToasts()
+
+  let toastId = null
+  const progressCallback = text => {
+    if (toastId == null) {
+      addToast(text, { appearance: 'info' }, id => {
+        toastId = id
+      })
+    } else {
+      updateToast(toastId, { content: text }, id => {
+        toastId = id
+      })
+    }
+  }
+
   const publishPost = async () => {
     console.log(postBody)
 
@@ -42,7 +58,8 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
       externalNullifierStr,
       signalStr,
       identity,
-      contract
+      contract,
+      progressCallback
     )
 
     const result = await fetchPostNewPost(postBody, proof, publicSignals)
