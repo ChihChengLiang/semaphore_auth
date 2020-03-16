@@ -10,13 +10,17 @@ const ProofOfBurn = ({ contract }) => {
   })
 
   useEffect(() => {
-    const fetchData = async () => {
+    let didCancel = false
+    const fetchContractData = async () => {
       const address = contract.address
       const registrationFee = (await contract.registration_fee()).toString()
       const commitments = (await contract.getIdentityCommitments()).length
-      setData({ address, registrationFee, commitments })
+      if (!didCancel) setData({ address, registrationFee, commitments })
     }
-    fetchData()
+    fetchContractData()
+    return () => {
+      didCancel = true
+    }
   }, [])
 
   return data.address ? (
