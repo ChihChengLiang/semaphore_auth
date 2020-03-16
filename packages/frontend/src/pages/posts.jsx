@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Component } from 'react'
 
 import genAuth from '../web3/semaphore'
@@ -7,12 +7,13 @@ import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 
-const Post = ({ post, isLight }) => {
+const Post = ({ post, isNew }) => {
   return (
     <article className='media'>
-      <div className={`media-content ${isLight ? 'is-light' : ''}`}>
+      <div className='media-content'>
         <div className='content'>
           <strong>{post.id}</strong>
+          {isNew ? <span className='tag'>new</span> : ''}
           <p>{post.postBody}</p>
           <small>{post.createdAt}</small>
         </div>
@@ -76,52 +77,34 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
   )
 }
 
-class Posts extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      error: null,
-      isLoaded: false,
-      items: []
-    }
-  }
-
-  componentDidMount () {
+const Posts = ({ newPostId }) => {
+  const [error, setError] = useState(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [items, setItems] = useState([])
+  useEffect(() => {
     fetchGetPosts().then(
       result => {
-        this.setState({
-          isLoaded: true,
-          result
-        })
+        setItems(result.results)
+        setIsLoaded(true)
       },
       error => {
-        this.setState({
-          isLoaded: true,
-          error
-        })
+        setError(error)
+        setIsLoaded(true)
       }
     )
-  }
-
-  render () {
-    const { error, isLoaded, result } = this.state
-    if (error) {
-      return <div>Error: {error.message}</div>
-    } else if (!isLoaded) {
-      return <div>Loading...</div>
-    } else {
-      return (
-        <ul>
-          {result.results.map((post, index) => (
-            <Post
-              key={index}
-              post={post}
-              isLight={this.props.newPostId === post.id}
-            />
-          ))}
-        </ul>
-      )
-    }
+  })
+  if (error) {
+    return <div>Error: {error.message}</div>
+  } else if (!isLoaded) {
+    return <div>Loading...</div>
+  } else {
+    return (
+      <ul>
+        {items.map((post, index) => (
+          <Post key={index} post={post} isNew={newPostId === post.id} />
+        ))}
+      </ul>
+    )
   }
 }
 
