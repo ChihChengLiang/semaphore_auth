@@ -5,6 +5,7 @@ import genAuth from '../web3/semaphore'
 import { EpochbasedExternalNullifier } from 'semaphore-auth-contracts/lib/externalNullifier'
 import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
+import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 
 const Post = ({ post }) => {
   return (
@@ -43,16 +44,9 @@ const NewPost = ({ registrationInfo, contract }) => {
       contract
     )
 
-    await fetch(new URL('./posts/new', 'http://localhost:5566'), {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ postBody, proof, publicSignals })
-    })
-      .then(res => res.text())
-      .then(result => console.info(result))
+    await fetchPostNewPost(postBody, proof, publicSignals).then(result =>
+      console.info(result)
+    )
   }
 
   return (
@@ -94,22 +88,20 @@ class Posts extends Component {
   }
 
   componentDidMount () {
-    fetch('http://localhost:5566/posts/')
-      .then(res => res.json())
-      .then(
-        result => {
-          this.setState({
-            isLoaded: true,
-            result
-          })
-        },
-        error => {
-          this.setState({
-            isLoaded: true,
-            error
-          })
-        }
-      )
+    fetchGetPosts().then(
+      result => {
+        this.setState({
+          isLoaded: true,
+          result
+        })
+      },
+      error => {
+        this.setState({
+          isLoaded: true,
+          error
+        })
+      }
+    )
   }
 
   render () {

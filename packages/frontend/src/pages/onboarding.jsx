@@ -3,13 +3,13 @@ import { CreateIdentity } from './identity'
 import { NewPost } from './posts'
 import { hasId, retrieveId } from '../storage'
 import { Activation } from '../web3'
-import { ProofOfBurn } from '../components/contracts'
 import { useWeb3Context } from 'web3-react'
 import { Registration } from '../pages/identity'
 import ProofOfBurnABI from 'semaphore-auth-contracts/abis/ProofOfBurn.json'
 import { ethers } from 'ethers'
 import { genIdentityCommitment } from 'libsemaphore'
 import register from '../web3/registration'
+import { fetchGetRegistrationInfo } from '../utils/fetch'
 
 // Generate an Identity
 // Activate Metamask
@@ -50,9 +50,7 @@ const OnBoarding = () => {
 
   useEffect(() => {
     const fetchRegistrationInfo = async () => {
-      const registrationInfo = await fetch('http://localhost:5566/info').then(
-        res => res.json()
-      )
+      const registrationInfo = await fetchGetRegistrationInfo()
       console.log(registrationInfo)
 
       setRegistrationInfo(registrationInfo)
