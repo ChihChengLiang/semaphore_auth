@@ -30,15 +30,12 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
   const { addToast, updateToast } = useToasts()
 
   let toastId = null
-  const progressCallback = text => {
+  const progressCallback = ({ text, appearance = 'info' }) => {
+    const setToastId = id => (toastId = id)
     if (toastId == null) {
-      addToast(text, { appearance: 'info' }, id => {
-        toastId = id
-      })
+      addToast(text, { appearance }, setToastId)
     } else {
-      updateToast(toastId, { content: text }, id => {
-        toastId = id
-      })
+      updateToast(toastId, { content: text, appearance }, setToastId)
     }
   }
 
@@ -66,6 +63,11 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
     )
 
     const result = await fetchPostNewPost(postBody, proof, publicSignals)
+    if (result.error) {
+      progressCallback({ text: result.error, appearance: 'error' })
+    } else {
+      progressCallback({ text: result.message, appearance: 'success' })
+    }
     onPublish(result)
     setIsLoading(false)
   }

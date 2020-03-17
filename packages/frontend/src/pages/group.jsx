@@ -86,14 +86,7 @@ const Group = () => {
   }
   const onPublish = result => {
     console.log(result)
-    if (result.error) {
-      addToast(result.error, {
-        appearance: 'error'
-      })
-    } else {
-      addToast(result.message, {
-        appearance: 'success'
-      })
+    if (!result.error) {
       setNewPostId(result.postId)
     }
   }
