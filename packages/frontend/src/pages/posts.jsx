@@ -25,6 +25,7 @@ const Post = ({ post, isNew }) => {
 
 const NewPost = ({ registrationInfo, contract, onPublish }) => {
   const [postBody, setPostBody] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const { addToast, updateToast } = useToasts()
 
@@ -43,6 +44,8 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
 
   const publishPost = async () => {
     console.log(postBody)
+
+    setIsLoading(true)
 
     const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
       registrationInfo.serverName,
@@ -64,6 +67,7 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
 
     const result = await fetchPostNewPost(postBody, proof, publicSignals)
     onPublish(result)
+    setIsLoading(false)
   }
 
   return (
@@ -83,7 +87,10 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
           <div className='level-left'></div>
           <div className='level-right'>
             <div className='level-item'>
-              <a className='button is-primary' onClick={publishPost}>
+              <a
+                className={`button is-primary ${isLoading ? 'is-loading' : ''}`}
+                onClick={publishPost}
+              >
                 Publish
               </a>
             </div>
