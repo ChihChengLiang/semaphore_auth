@@ -8,15 +8,67 @@ import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 import { useToasts } from 'react-toast-notifications'
 
+const SemaphoreDescriptions = {
+  externalNullifierStr:
+    'This limits the rate the author can publish a content in a period of time.',
+  nullifierHash:
+    'Is unique given the same externalNullifier and identity, meaning the author can publish at most once between the time period',
+  signalHash: "Is the content's hash and protects the content's authenticity",
+  root:
+    'Is the root of the identity hash tree and is stored on chain. The author proves being a member of this root represents',
+  proof: 'Claims the correctness of the above statements.'
+}
+
+const Semaphore = ({ post }) => {
+  return (
+    <div className='card'>
+      <div
+        className='card-content is-small has-background-light'
+        style={{ wordBreak: 'break-all' }}
+      >
+        <p>
+          The proof is validated at backend, and frontend validation will be
+          implemented in the next version. For now, information is displayed for
+          the demonstration of the usage.
+        </p>
+        {Object.keys(SemaphoreDescriptions).map(key => (
+          <div key={key}>
+            <h5>{key}</h5>
+            <p>{SemaphoreDescriptions[key]}</p>
+            <code>{post[key]}</code>
+            <hr />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 const Post = ({ post, isNew }) => {
+  const [on, toggle] = useState(false)
   return (
     <article className='media'>
+      <div className='media-left'>
+        <h4 className='has-text-grey'>{post.id}</h4>
+      </div>
       <div className='media-content'>
         <div className='content'>
-          <strong>{post.id}</strong>
           {isNew ? <span className='tag'>new</span> : ''}
           <p>{post.postBody}</p>
-          <small>{post.createdAt}</small>
+          <div className='level'>
+            <div className='level-left'>
+              <div className='level-item'>
+                <small>{post.createdAt}</small>
+              </div>
+              <div className='level-item'>
+                <button className='button is-small' onClick={() => toggle(!on)}>
+                  Toggle Proofs
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {on ? <Semaphore post={post} /> : ''}
         </div>
       </div>
     </article>

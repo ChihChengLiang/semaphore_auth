@@ -52,9 +52,10 @@ const requireSemaphoreAuth = async (req, res, next) => {
     next(err)
   }
   const semaphoreLog = await SemaphoreLog.query().insert({
-    root,
+    root: root.toString(),
     nullifierHash: nullifierHash.toString(),
     externalNullifierStr: expectedExternalNullifierStr,
+    signalHash: signalHash.toString(),
     proof: rawProof
   })
 

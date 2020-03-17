@@ -42,7 +42,7 @@ async function validateNullifierNotSeen (nullifierHash) {
   if (results.length > 0) {
     const log = results[0]
     throw new Error(
-      `nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${log.externalNullifierStr}"`
+      `Posting too soon. nullifierHash (${nullifierHash}) has been seen before for the same external nullifier "${log.externalNullifierStr}"`
     )
   }
 }
