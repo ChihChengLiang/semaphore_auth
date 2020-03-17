@@ -1,133 +1,72 @@
-import React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
-import Nav from './nav'
-import { initStorage, hasId, retrieveId, storeId } from './storage'
+import { initStorage } from './storage'
 import Web3Provider from 'web3-react'
-import { Connectors, useWeb3Context } from 'web3-react'
-const { InjectedConnector } = Connectors
-import { genIdentity, genIdentityCommitment } from 'libsemaphore'
 
-import register from './web3/registration'
+import { Activation, MetaMask } from './web3'
 
-const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
+import { IdentityPage } from './pages/identity'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import './custom.scss'
 
-const post = {
-  content:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A mene tu? Qui potest igitur habitare in beata vita summi mali metus? Nihil opus est exemplis hoc facere longius. Sint ista Graecorum; Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte disputari potest. Duo Reges: constructio interrete. Negare non possum.'
-}
-const posts = [post, post, post, post, post]
+import { ToastProvider } from 'react-toast-notifications'
+import Group from './pages/group'
 
-const Posts = props => {
-  const posts = props.posts.map((post, index) => (
-    <Post key={index} post={post} />
-  ))
-  return <div>{posts}</div>
-}
+const links = [
+  { path: '/', title: 'Posts', component: <Group /> },
+  {
+    path: '/identity',
+    title: 'Identity',
+    component: <IdentityPage />
+  }
+]
 
-const Post = props => {
-  return (
-    <div className='card'>
-      <div className='card-content'>
-        <div className='content'>{props.post.content}</div>
+const RouteTabs = () => (
+  <Router>
+    <div className='tabs is-centered is-boxed'>
+      <ul>
+        {links.map((link, key) => (
+          <Route key={key} path={link.path}>
+            {({ match }) => (
+              <li className={match ? 'is-active' : undefined}>
+                <Link to={link.path}>{link.title}</Link>
+              </li>
+            )}
+          </Route>
+        ))}
+      </ul>
+    </div>
+    <Switch>
+      {links.map((link, key) => (
+        <Route key={key} exact path={link.path}>
+          {link.component}
+        </Route>
+      ))}
+    </Switch>
+  </Router>
+)
+
+const Layout = ({ children }) => (
+  <section className='section'>
+    <div className='columns'>
+      <div className='column is-half is-offset-one-quarter'>
+        <div className='box'>{children}</div>
       </div>
     </div>
-  )
-}
-
-const Identity = props => {
-  return (
-    <>
-      <p>pubkey: {props.identity.keypair.pubKey.map(x => x.toString())}</p>
-      <p>privatekey: {props.identity.keypair.privKey}</p>
-      <p>identityNullifier: {props.identity.identityNullifier.toString()}</p>
-      <p>identityTrapdoor: {props.identity.identityTrapdoor.toString()}</p>
-    </>
-  )
-}
-
-const IdentityManagement = () => {
-  const [idExists, setIdExists] = useState(hasId())
-  function createIdentity () {
-    const identity = genIdentity()
-    storeId(identity)
-    setIdExists(true)
-  }
-
-  return (
-    <>
-      <h1>Identity</h1>
-      {idExists ? (
-        <Identity identity={retrieveId()} />
-      ) : (
-        <button onClick={createIdentity}>Generate Identity</button>
-      )}
-    </>
-  )
-}
-
-const IdentityCommitment = () => {
-  const context = useWeb3Context()
-  const _register = async () => {
-    const identityCommitment = genIdentityCommitment(retrieveId())
-    await register(context, identityCommitment)
-  }
-
-  return (
-    <>
-      <p>Identity Commitment</p>
-      <button onClick={_register}>Register</button>
-    </>
-  )
-}
-
-const Account = () => {
-  const context = useWeb3Context()
-
-  return <p>{context.account}</p>
-}
-
-const Activation = () => {
-  const context = useWeb3Context()
-  useEffect(() => {
-    context.setFirstValidConnector(['MetaMask'])
-  }, [])
-
-  if (!context.active && !context.error) {
-    // loading
-    return <p>Loading</p>
-  } else if (context.error) {
-    //error
-    return <p>Error {context.error.toString()}</p>
-  } else {
-    // success
-    return (
-      <>
-        <h1>Loading sucess</h1>
-        {conext => {
-          return <p>{conext.account}</p>
-        }}
-        <IdentityCommitment />
-      </>
-    )
-  }
-}
+  </section>
+)
 
 const App = () => {
   initStorage()
   return (
     <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'>
-      <Activation />
-      <Account />
-      <div className='section'>
-        <div className='container'>
-          <h1>Foooo</h1>
-          <IdentityManagement />
-
-          <Posts posts={posts} />
-        </div>
-      </div>
+      <ToastProvider>
+        <Layout>
+          <RouteTabs />
+        </Layout>
+      </ToastProvider>
     </Web3Provider>
   )
 }

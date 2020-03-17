@@ -1,15 +1,23 @@
-import getContracts from './getContracts'
-import { ethers } from 'ethers'
+import { hasId, retrieveId } from '../storage'
+import { genIdentityCommitment } from 'libsemaphore'
 
-const register = async (context, identityCommitment) => {
-  const { ProofOfBurn } = getContracts(context.library.provider)
-  const registration_fee = await ProofOfBurn.registration_fee()
-  console.log('registration_fee', registration_fee)
+const checkRegistered = async contract => {
+  if (!hasId()) {
+    return false
+  } else {
+    const commitments = await contract.getIdentityCommitments()
+    const identityCommitment = genIdentityCommitment(retrieveId())
+    return commitments
+      .map(x => x.toString())
+      .includes(identityCommitment.toString())
+  }
+}
 
-  return await ProofOfBurn.register(identityCommitment.toString(), {
-    value: registration_fee,
-    gasLimit: 900000
+const register = async (contract, identityCommitment) => {
+  const registration_fee = await contract.registration_fee()
+  return await contract.register(identityCommitment.toString(), {
+    value: registration_fee
   })
 }
 
-export default register
+export { register, checkRegistered }

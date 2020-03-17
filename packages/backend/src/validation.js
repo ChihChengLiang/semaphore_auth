@@ -15,6 +15,7 @@ const {
 } = require('libsemaphore')
 
 const { SemaphoreLog } = require('./schema')
+const configs = require('./configs')
 
 function validateExternalNullifierMatch (actual, externalNullifierStr) {
   const expected = snarkjs.bigInt(genExternalNullifier(externalNullifierStr))
@@ -49,7 +50,7 @@ async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
   const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
 
-  const isInRootHistory = await semaphore.isInRootHistory(
+  const isInRootHistory = await semaphore.rootHistory(
     stringifyBigInts(root)
   )
   if (!isInRootHistory) throw Error(`Root (${root.toString()}) not in history`)

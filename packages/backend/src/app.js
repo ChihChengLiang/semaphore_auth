@@ -2,10 +2,16 @@ const express = require('express')
 const app = express()
 
 const configs = require('./configs')
-const { createSchema, Post } = require('./schema')
-const { requireSemaphoreAuth } = require('./authentication')
+const { createSchema } = require('./schema')
+const { posts } = require('./posts')
 
 createSchema()
+
+if (process.env.NODE_ENV !== 'production') {
+  const cors = require('cors')
+  app.use(cors())
+  console.log('CORS enabled')
+}
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -20,24 +26,13 @@ app.get('/info', (req, res) => {
   })
 })
 
-app.get('/posts', async (req, res) => {
-  const posts = await Post.query().orderBy('id', 'desc')
-  res.json({ posts })
-})
-
-app.post('/posts/new', requireSemaphoreAuth, async (req, res, next) => {
-  const post = await Post.query()
-    .insert({
-      postBody: req.body.postBody,
-      semaphoreLogId: req.semaphoreLogId
-    })
-    .catch(next)
-  res.send(`Your article is published! Article id: ${post.id}`)
-})
+app.use('/posts', posts)
 
 app.use(function (err, req, res, next) {
   console.error(err.stack)
-  res.status(500).send(err.toString())
+  res.status(400).json({
+    error: err.toString()
+  })
 })
 
 module.exports = app

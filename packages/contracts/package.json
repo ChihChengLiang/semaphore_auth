@@ -9,7 +9,7 @@
     "deploy": "node ./scripts/deploy.js --verbose",
     "test": "ava",
     "copyABIs": "node ./scripts/copyABIs.js",
-    "ganache": "ganache-cli -a 10 -m='candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' --gasLimit=8800000 --port 8545 -i 1234"
+    "ganache": "ganache-cli -a 10 -m='candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' --gasLimit=8800000 --port 8545 -i 4"
   },
   "author": "",
   "license": "ISC",
