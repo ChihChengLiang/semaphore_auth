@@ -107,29 +107,61 @@ const Posts = ({ newPostId }) => {
   const [error, setError] = useState(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [items, setItems] = useState([])
-  useEffect(() => {
-    fetchGetPosts().then(
-      result => {
-        setItems(result.results)
-        setIsLoaded(true)
-      },
-      error => {
-        setError(error)
-        setIsLoaded(true)
+  const [page, setPage] = useState(0)
+
+  const loadMore = async (_page, _items) => {
+    try {
+      const result = await fetchGetPosts(_page)
+      if (result.next !== null) {
+        setPage(_page + 1)
+      } else {
+        setPage(null)
       }
-    )
-  })
+      setItems(_items.concat(result.results))
+    } catch (error) {
+      setError(error)
+    }
+    setIsLoaded(true)
+  }
+
+  useEffect(() => {
+    let _page = page
+    let _items = items
+
+    // If a new post published, load new posts from server before rerender
+    if (newPostId > Math.max(...items.map(post => post.id))) {
+      _page = 0
+      setPage(0)
+      _items = []
+      setItems([])
+    }
+    loadMore(_page, _items)
+  }, [newPostId])
   if (error) {
     return <div>Error: {error.message}</div>
   } else if (!isLoaded) {
     return <div>Loading...</div>
   } else {
     return (
-      <ul>
-        {items.map((post, index) => (
-          <Post key={index} post={post} isNew={newPostId === post.id} />
-        ))}
-      </ul>
+      <>
+        <ul>
+          {items.map((post, index) => (
+            <Post key={index} post={post} isNew={newPostId === post.id} />
+          ))}
+        </ul>
+        <>
+          {page ? (
+            <button
+              className='button is-primary'
+              onClick={() => loadMore(page, items)}
+            >
+              Load More
+            </button>
+          ) : (
+            <hr />
+          )}
+        </>
+      </>
     )
   }
 }

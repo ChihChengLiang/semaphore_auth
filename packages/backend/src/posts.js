@@ -16,10 +16,11 @@ posts.get('/', async (req, res) => {
 })
 
 posts.get('/page/:pageNum', async (req, res) => {
-  const pageNum = req.params.pageNum
+  const pageNum = parseInt(req.params.pageNum)
   const result = await Post.query()
     .orderBy('id', 'desc')
     .page(pageNum, PAGESIZE)
+  result.next = (pageNum + 1) * PAGESIZE < result.total ? pageNum + 1 : null
   res.json(result)
 })
 

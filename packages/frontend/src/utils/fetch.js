@@ -5,7 +5,7 @@ const _fetch = async (path, options) => {
   return await response.json()
 }
 
-const fetchGetPosts = async () => await _fetch('./posts/')
+const fetchGetPosts = async page => await _fetch(`./posts/page/${page}`)
 
 const fetchGetRegistrationInfo = async () => await _fetch('./info/')
 
