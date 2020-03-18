@@ -28,10 +28,10 @@ const genAuth = async (
   const t0 = performance.now()
 
   const [cirDef, provingKey] = await Promise.all([
-    fetchWithoutCache('http://localhost:5566/circuit')
+    fetchWithoutCache(CIRCUIT_URL)
       .then(res => res.json())
       .then(res => res),
-    fetchWithoutCache('http://localhost:5566/provingKey')
+    fetchWithoutCache(PROVING_KEY_URL)
       .then(res => res.arrayBuffer())
       .then(res => new Uint8Array(res))
   ])
