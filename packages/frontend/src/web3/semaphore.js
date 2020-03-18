@@ -23,7 +23,9 @@ const genAuth = async (
   progressCallback
 ) => {
   console.log('Downloading circuit')
-  progressCallback({ text: 'Downloading circuit and proving key' })
+  progressCallback({ text: 'Downloading circuit and proving key ...' })
+
+  const t0 = performance.now()
 
   const [cirDef, provingKey] = await Promise.all([
     fetchWithoutCache('http://localhost:5566/circuit')
@@ -34,15 +36,20 @@ const genAuth = async (
       .then(res => new Uint8Array(res))
   ])
 
-  progressCallback({ text: 'Circuit and proving key downloaded' })
+  const downloadTime = ((performance.now() - t0) / 1000).toFixed(2)
+
+  progressCallback({
+    text: `
+    Circuit and proving key downloaded (${downloadTime} s).
+    Generating Witness ...`
+  })
 
   const circuit = genCircuit(cirDef)
   const leaves = await contract.getIdentityCommitments()
 
   const externalNullifier = genExternalNullifier(externalNullifierStr)
 
-  progressCallback({ text: 'Generating Witness' })
-
+  const t1 = performance.now()
   const { witness } = await genWitness(
     signalStr,
     circuit,
@@ -51,11 +58,19 @@ const genAuth = async (
     SEMAPHORE_TREE_DEPTH,
     externalNullifier
   )
+  const genWitnessTime = ((performance.now() - t1) / 1000).toFixed(2)
 
-  progressCallback({ text: 'Generating proof and public signals' })
+  progressCallback({
+    text: `
+    Witness generated (${genWitnessTime} s).
+    Generating proof and public signals ...`
+  })
 
+  const t2 = performance.now()
   const proof = await genProof(witness, provingKey)
   const publicSignals = genPublicSignals(witness, circuit)
+  const genProofTime = ((performance.now() - t2) / 1000).toFixed(2)
+  progressCallback({ text: `Proof generated (${genProofTime} s)` })
 
   const requestData = {
     proof: JSON.stringify(stringifyBigInts(proof)),
