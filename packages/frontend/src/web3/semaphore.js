@@ -1,5 +1,4 @@
 import {
-  genCircuit,
   genExternalNullifier,
   genWitness,
   genProof,
@@ -7,13 +6,7 @@ import {
   stringifyBigInts
 } from 'libsemaphore'
 
-import {
-  SEMAPHORE_TREE_DEPTH,
-  CIRCUIT_URL,
-  PROVING_KEY_URL
-} from 'semaphore-auth-contracts/constants'
-
-const fetchWithoutCache = url => fetch(url, { cache: 'no-store' })
+import { SEMAPHORE_TREE_DEPTH } from 'semaphore-auth-contracts/constants'
 
 const genAuth = async (
   externalNullifierStr,
@@ -22,32 +15,14 @@ const genAuth = async (
   contract,
   progressCallback
 ) => {
-  console.log('Downloading circuit')
-  progressCallback({ text: 'Downloading circuit and proving key ...' })
+  const circuit = window.circuit
+  const provingKey = window.provingKey
 
-  const t0 = performance.now()
-
-  const [cirDef, provingKey] = await Promise.all([
-    fetchWithoutCache(CIRCUIT_URL)
-      .then(res => res.json())
-      .then(res => res),
-    fetchWithoutCache(PROVING_KEY_URL)
-      .then(res => res.arrayBuffer())
-      .then(res => new Uint8Array(res))
-  ])
-
-  const downloadTime = ((performance.now() - t0) / 1000).toFixed(2)
-
-  progressCallback({
-    text: `
-    Circuit and proving key downloaded (${downloadTime} s).
-    Generating Witness ...`
-  })
-
-  const circuit = genCircuit(cirDef)
   const leaves = await contract.getIdentityCommitments()
 
   const externalNullifier = genExternalNullifier(externalNullifierStr)
+
+  progressCallback({ text: 'Generating Witness ...' })
 
   const t1 = performance.now()
   const { witness } = await genWitness(

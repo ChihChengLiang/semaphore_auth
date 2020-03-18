@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useWeb3Context } from 'web3-react'
 
-import { NewPost } from './posts'
-import { Posts } from './posts'
+import { NewPost, Posts } from './posts'
+import DownloadSnarks from '../components/download_snarks'
 import { fetchGetRegistrationInfo } from '../utils/fetch'
 import { checkRegistered } from '../web3/registration'
 import { useToasts } from 'react-toast-notifications'
@@ -31,6 +31,10 @@ const Group = () => {
   })
   const [contract, setContract] = useState(null)
   const [newPostId, setNewPostId] = useState(null)
+
+  const [snarksDownloaded, setSnarksDownloaded] = useState(
+    window.circuit && window.provingKey
+  )
 
   useEffect(() => {
     let didCancel = false
@@ -84,6 +88,11 @@ const Group = () => {
       })
     }
   }
+
+  const onSnarkDownloaded = () => {
+    addToast('Circuit and proving key downloaded', { appearance: 'success' })
+    setSnarksDownloaded(true)
+  }
   const onPublish = result => {
     console.log(result)
     if (!result.error) {
@@ -96,14 +105,16 @@ const Group = () => {
     onboarding = <CreateIdentity onCreated={onIdCreated} />
   } else if (!context.active) {
     onboarding = <Activation />
-  } else if (contract !== null) {
+  } else if (contract !== null && !isRegistered) {
     onboarding = <Registration contract={contract} register={_register} />
+  } else if (!snarksDownloaded) {
+    onboarding = <DownloadSnarks onComplete={onSnarkDownloaded} />
   } else {
     onboarding = <p>Loading</p>
   }
   return (
     <div className='container'>
-      {isRegistered ? (
+      {isRegistered && snarksDownloaded ? (
         <NewPost
           contract={contract}
           registrationInfo={registrationInfo}

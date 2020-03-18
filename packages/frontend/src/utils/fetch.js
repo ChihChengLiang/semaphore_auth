@@ -1,3 +1,9 @@
+import {
+  CIRCUIT_URL,
+  PROVING_KEY_URL
+} from 'semaphore-auth-contracts/constants'
+import fetchProgress from 'fetch-progress'
+
 const ROOT_URL = 'http://localhost:5566'
 
 const _fetch = async (path, options) => {
@@ -21,4 +27,36 @@ const fetchPostNewPost = async (postBody, proof, publicSignals) => {
   return await _fetch('./posts/new', options)
 }
 
-export { fetchGetPosts, fetchPostNewPost, fetchGetRegistrationInfo }
+import { genCircuit } from 'libsemaphore'
+
+const fetchWithProgress = async (url, onProgress) => {
+  // onProgress takes an argument progress that looks like
+  // {
+  //   total: 132115842,
+  //   transferred: 131596288,
+  //   speed: 131596288,
+  //   eta: 3948090.0859452817,
+  //   remaining: 519554,
+  //   percentage: 100
+  // }
+  return await fetch(url).then(fetchProgress({ onProgress }))
+}
+
+const fetchCircuit = async onProgress => {
+  const response = await fetchWithProgress(CIRCUIT_URL, onProgress)
+  const result = await response.json()
+  window.circuit = genCircuit(result)
+}
+const fetchProvingKey = async onProgress => {
+  const response = await fetchWithProgress(PROVING_KEY_URL, onProgress)
+  const result = await response.arrayBuffer()
+  window.provingKey = new Uint8Array(result)
+}
+
+export {
+  fetchGetPosts,
+  fetchPostNewPost,
+  fetchGetRegistrationInfo,
+  fetchCircuit,
+  fetchProvingKey
+}
