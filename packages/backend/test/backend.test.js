@@ -44,12 +44,11 @@ test('should post a new post', async t => {
   const signalStr = ethers.utils.hashMessage(postBody)
 
   const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
-    configs.SERVER_NAME,
     '/posts/new',
     300 * 1000 // rate limit to 30 seconds
   )
 
-  const externalNullifierStr = newPostExternalNullifierGen.toString()
+  const externalNullifierStr = newPostExternalNullifierGen.getString()
   console.log(externalNullifierStr)
   const externalNullifier = libsemaphore.genExternalNullifier(
     externalNullifierStr
