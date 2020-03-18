@@ -6,8 +6,6 @@ const {
   validateProof
 } = require('./validation')
 
-const configs = require('./configs')
-
 const {
   EpochbasedExternalNullifier
 } = require('semaphore-auth-contracts/lib/externalNullifier')
@@ -17,7 +15,6 @@ const { unstringifyBigInts } = require('libsemaphore')
 const { SemaphoreLog } = require('./schema')
 
 const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
-  configs.SERVER_NAME,
   '/posts/new',
   300 * 1000 // rate limit to 30 seconds
 )
@@ -37,7 +34,7 @@ const requireSemaphoreAuth = async (req, res, next) => {
   ] = parsedPublicSignals
   const content = req.body.postBody
 
-  const expectedExternalNullifierStr = newPostExternalNullifierGen.toString()
+  const expectedExternalNullifierStr = newPostExternalNullifierGen.getString()
 
   try {
     validateExternalNullifierMatch(

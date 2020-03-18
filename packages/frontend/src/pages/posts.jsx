@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Component } from 'react'
 
 import genAuth from '../web3/semaphore'
 import { EpochbasedExternalNullifier } from 'semaphore-auth-contracts/lib/externalNullifier'
@@ -7,6 +6,26 @@ import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 import { useToasts } from 'react-toast-notifications'
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+
+const newPostENGen = new EpochbasedExternalNullifier(
+  '/posts/new',
+  300 * 1000 // ExternalNullifier epoch length
+)
+
+const ExternalNullifierIndicator = () => {
+  const remainingTime = newPostENGen.timeBeforeNextEpoch() / 1000
+  return (
+    <CountdownCircleTimer
+      size={40}
+      isPlaying
+      onComplete={() => [true, 0]} // repeat animation after 0 second
+      durationSeconds={newPostENGen.epochLength / 1000}
+      initialRemainingTime={remainingTime}
+      colors={[['#0A0A0A', 0.8], ['#0A0A0A', 0.1], ['#FE3860']]}
+    />
+  )
+}
 
 const SemaphoreDescriptions = {
   externalNullifierStr:
@@ -75,7 +94,7 @@ const Post = ({ post, isNew }) => {
   )
 }
 
-const NewPost = ({ registrationInfo, contract, onPublish }) => {
+const NewPost = ({ contract, onPublish }) => {
   const [postBody, setPostBody] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -96,15 +115,10 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
 
     setIsLoading(true)
 
-    const newPostExternalNullifierGen = new EpochbasedExternalNullifier(
-      registrationInfo.serverName,
-      '/posts/new',
-      300 * 1000 // rate limit to 30 seconds
-    )
     const signalStr = ethers.utils.hashMessage(postBody)
 
     const identity = retrieveId()
-    const externalNullifierStr = newPostExternalNullifierGen.toString()
+    const externalNullifierStr = newPostENGen.getString()
 
     const { proof, publicSignals } = await genAuth(
       externalNullifierStr,
@@ -123,7 +137,6 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
     onPublish(result)
     setIsLoading(false)
   }
-
   return (
     <article className='media'>
       <div className='media-content'>
@@ -138,7 +151,21 @@ const NewPost = ({ registrationInfo, contract, onPublish }) => {
           </p>
         </div>
         <nav className='level'>
-          <div className='level-left'></div>
+          <div className='level-left'>
+            <div className='level-item'>
+              <ExternalNullifierIndicator />
+            </div>
+            <div className='level-item'>
+              <p>
+                <small>
+                  Publishing is rate limited to once per epoch (
+                  {newPostENGen.epochLength / 1000} seconds).
+                </small>
+                <br />
+                <small>Avoid publishing near the end of the epoch.</small>
+              </p>
+            </div>
+          </div>
           <div className='level-right'>
             <div className='level-item'>
               <a
