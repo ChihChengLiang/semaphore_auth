@@ -1,14 +1,21 @@
 class EpochbasedExternalNullifier {
-  constructor (serviceName, uri, epochLength) {
-    this.serviceName = serviceName
-    this.uri = uri
+  constructor (prefix, epochLength) {
+    this.prefix = prefix
     this.epochLength = epochLength // In milliseconds
   }
 
-  toString () {
+  epochStart () {
     const now = new Date().valueOf()
-    const epochStart = now - (now % this.epochLength)
-    return `${this.serviceName}:${this.uri}:${epochStart}`
+    return now - (now % this.epochLength)
+  }
+
+  timeBeforeNextEpoch () {
+    const now = new Date().valueOf()
+    return this.epochLength - (now % this.epochLength)
+  }
+
+  getString () {
+    return `${this.prefix}:${this.epochStart()}`
   }
 }
 

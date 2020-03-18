@@ -115,11 +115,7 @@ const Group = () => {
   return (
     <div className='container'>
       {isRegistered && snarksDownloaded ? (
-        <NewPost
-          contract={contract}
-          registrationInfo={registrationInfo}
-          onPublish={onPublish}
-        />
+        <NewPost contract={contract} onPublish={onPublish} />
       ) : (
         onboarding
       )}
