@@ -4,16 +4,15 @@ import {
 } from 'semaphore-auth-contracts/constants'
 import fetchProgress from 'fetch-progress'
 
-const ROOT_URL = 'http://localhost:5566'
-
 const _fetch = async (path, options) => {
-  const response = await fetch(new URL(path, ROOT_URL), options)
+  console.log(`/api/${path}`)
+  const response = await fetch(`/api/${path}`, options)
   return await response.json()
 }
 
-const fetchGetPosts = async page => await _fetch(`./posts/page/${page}`)
+const fetchGetPosts = async page => await _fetch(`posts/page/${page}`)
 
-const fetchGetRegistrationInfo = async () => await _fetch('./info/')
+const fetchGetRegistrationInfo = async () => await _fetch('info/')
 
 const fetchPostNewPost = async (postBody, proof, publicSignals) => {
   const options = {
@@ -24,7 +23,7 @@ const fetchPostNewPost = async (postBody, proof, publicSignals) => {
     },
     body: JSON.stringify({ postBody, proof, publicSignals })
   }
-  return await _fetch('./posts/new', options)
+  return await _fetch('posts/new', options)
 }
 
 import { genCircuit } from 'libsemaphore'
