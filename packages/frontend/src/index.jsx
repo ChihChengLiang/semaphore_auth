@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import { initStorage } from './storage'
 import Web3Provider from 'web3-react'
 
-import { Activation, MetaMask } from './web3'
+import { MetaMask } from './web3'
 
 import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'

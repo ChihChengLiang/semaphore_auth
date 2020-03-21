@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { useEffect } from 'react'
+import React from 'react'
 import { Connectors, useWeb3Context } from 'web3-react'
 const { InjectedConnector } = Connectors
 
