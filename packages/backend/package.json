@@ -1,11 +1,12 @@
 {
-  "name": "semaphore-auth-backend",
+  "name": "@hojicha/backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "ava --timeout=1m"
+    "test": "ava --timeout=1m",
+    "migrate": "npx knex migrate:latest"
   },
   "keywords": [],
   "author": "",

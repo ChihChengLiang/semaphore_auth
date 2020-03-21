@@ -1,5 +1,5 @@
 const request = require('supertest')
-const app = require('../src/app')
+const { createApp, bindDb } = require('../src/app')
 const { deployContracts } = require('semaphore-auth-contracts/lib/deploy')
 const {
   REGISTRATION_FEE,
@@ -19,6 +19,9 @@ const test = require('ava')
 const configs = require('../src/configs')
 
 test('should post a new post', async t => {
+  const app = createApp()
+  await bindDb()
+
   const registrationFee = REGISTRATION_FEE
   const contracts = await deployContracts({ registrationFee })
 

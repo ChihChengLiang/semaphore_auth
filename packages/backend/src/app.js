@@ -1,38 +1,43 @@
 const express = require('express')
-const app = express()
-
-const configs = require('./configs')
-const { createSchema } = require('./schema')
 const { posts } = require('./posts')
+const { groups } = require('./groups')
+const Knex = require('knex')
+const configs = require('./configs')
+const { Model } = require('objection')
 
-createSchema()
+const bindDb = async () => {
+  const knex = Knex(configs.db)
+  Model.knex(knex)
 
-if (process.env.NODE_ENV !== 'production') {
-  const cors = require('cors')
-  app.use(cors())
-  console.log('CORS enabled')
+  // Wait for the DB to be active
+  const r = await knex.raw('select 1+1 as result')
+  if (r[0].result !== 2) {
+    throw Error('Cannot connect to db')
+  }
+
+  return knex
 }
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-
-app.get('/info', (req, res) => {
-  res.json({
-    serverName: configs.SERVER_NAME,
-    network: configs.NETWORK,
-    registrationStyle: 'ProofOfBurn',
-    registrationAddress: configs.PROOF_OF_BURN_ADDRESS,
-    semaphoreAddress: configs.SEMAPHORE_ADDRESS
-  })
-})
-
-app.use('/posts', posts)
-
-app.use(function (err, req, res, next) {
+const naiveErrorHandler = (err, req, res, next) => {
   console.error(err.stack)
   res.status(400).json({
     error: err.toString()
   })
-})
+}
 
-module.exports = app
+const createApp = () => {
+  const app = express()
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+
+  // Routes
+  app.use('/posts', posts)
+  app.use('/info', groups)
+
+  // Error handling
+  app.use(naiveErrorHandler)
+
+  return app
+}
+
+module.exports = { createApp, bindDb }
