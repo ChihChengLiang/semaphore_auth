@@ -22,8 +22,9 @@
     "sass": "^1.26.3"
   },
   "dependencies": {
+    "@web3-react/core": "^6.0.7",
+    "@web3-react/injected-connector": "^6.0.7",
     "bulma": "^0.8.0",
-    "dotenv": "^8.2.0",
     "ethers": "^4",
     "fetch-progress": "^1.2.0",
     "libsemaphore": "1.0.14",
@@ -33,7 +34,6 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-toast-notifications": "^2.4.0",
-    "semaphore-auth-contracts": "file:../contracts/",
-    "web3-react": "^5.0.5"
+    "semaphore-auth-contracts": "file:../contracts"
   }
 }

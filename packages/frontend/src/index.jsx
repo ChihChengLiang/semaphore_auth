@@ -3,9 +3,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import bulma from 'bulma'
 import { initStorage } from './storage'
-import Web3Provider from 'web3-react'
-
-import { MetaMask } from './web3'
+import { Web3ReactProvider } from '@web3-react/core'
+import { getLibrary } from './web3'
 
 import { IdentityPage } from './pages/identity'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
@@ -61,13 +60,13 @@ const Layout = ({ children }) => (
 const App = () => {
   initStorage()
   return (
-    <Web3Provider connectors={{ MetaMask }} libraryName='ethers.js'>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <ToastProvider>
         <Layout>
           <RouteTabs />
         </Layout>
       </ToastProvider>
-    </Web3Provider>
+    </Web3ReactProvider>
   )
 }
 
