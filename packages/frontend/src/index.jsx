@@ -28,7 +28,7 @@ const RouteTabs = () => (
     <div className='tabs is-centered is-boxed'>
       <ul>
         {links.map((link, key) => (
-          <Route key={key} path={link.path}>
+          <Route exact key={key} path={link.path}>
             {({ match }) => (
               <li className={match ? 'is-active' : undefined}>
                 <Link to={link.path}>{link.title}</Link>
