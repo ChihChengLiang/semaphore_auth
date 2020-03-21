@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "build": "parcel build index.html --no-autoinstall",
-    "start": "node server.js"
+    "start": "node server.js",
+    "configure": "node ../config/export-config.js > ./src/exported-config.json"
   },
   "author": "",
   "license": "ISC",

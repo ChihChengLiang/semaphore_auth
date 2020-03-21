@@ -1,8 +1,11 @@
 import React from 'react'
 import { Connectors, useWeb3Context } from 'web3-react'
+import { supportedNetwork } from '../configs'
 const { InjectedConnector } = Connectors
 
-const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
+const MetaMask = new InjectedConnector({
+  supportedNetworks: [supportedNetwork]
+})
 
 const Activation = () => {
   const context = useWeb3Context()

@@ -34,7 +34,9 @@ bundler.on('buildEnd', () => {
 
 app.use(bundler.middleware())
 
+const port = 3000
+
 // start up the server
-app.listen(3000, () => {
-  console.log('Parcel proxy server has started')
+app.listen(port, () => {
+  console.log('Parcel proxy server has started at:', `http://localhost:${port}`)
 })
