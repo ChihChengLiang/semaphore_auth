@@ -1,10 +1,8 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
+const config = require('@hojicha/config')
 
 module.exports = {
-  SERVER_NAME: process.env.SERVER_NAME || 'MyAwesomeForum',
-  NETWORK: process.env.NETWORK || 'localhost',
-  PROOF_OF_BURN_ADDRESS: process.env.PROOF_OF_BURN_ADDRESS,
-  SEMAPHORE_ADDRESS: process.env.SEMAPHORE_ADDRESS
+  SERVER_NAME: config.backend.serverName || 'MyAwesomeForum',
+  NETWORK: config.chain.network || 'localhost',
+  PROOF_OF_BURN_ADDRESS: config.chain.contracts.proofOfBurn,
+  SEMAPHORE_ADDRESS: config.chain.contracts.semaphore
 }

@@ -1,0 +1,19 @@
+---
+env: 'local'
+
+frontend:
+  supportedNetworkName: 'local'
+  supportedNetwork: 4
+
+backend:
+  serverName: 'hojicha'
+  network: 'localhost'
+  db:
+    client: 'sqlite3'
+    connection:
+      filename: 'mydb.sqlite'
+
+chain:
+  contracts:
+    proofOfBurn: '0x345cA3e014Aaf5dcA488057592ee47305D9B3e10'
+    semaphore: '0xF12b5dd4EAD5F743C6BaA640B0216200e89B60Da'
