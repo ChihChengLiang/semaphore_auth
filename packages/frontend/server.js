@@ -13,7 +13,7 @@ const parcelOptions = {
   // More info on supported options are documented at
   // https://parceljs.org/api
   https: false,
-  autoinstall: false
+  autoInstall: false
 }
 
 const app = express()

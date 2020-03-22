@@ -1,7 +1,4 @@
-import {
-  CIRCUIT_URL,
-  PROVING_KEY_URL
-} from 'semaphore-auth-contracts/constants'
+import { circuitUrl, provingKeyUrl } from '../configs'
 import fetchProgress from 'fetch-progress'
 
 const _fetch = async (path, options) => {
@@ -42,12 +39,12 @@ const fetchWithProgress = async (url, onProgress) => {
 }
 
 const fetchCircuit = async onProgress => {
-  const response = await fetchWithProgress(CIRCUIT_URL, onProgress)
+  const response = await fetchWithProgress(circuitUrl, onProgress)
   const result = await response.json()
   window.circuit = genCircuit(result)
 }
 const fetchProvingKey = async onProgress => {
-  const response = await fetchWithProgress(PROVING_KEY_URL, onProgress)
+  const response = await fetchWithProgress(provingKeyUrl, onProgress)
   const result = await response.arrayBuffer()
   window.provingKey = new Uint8Array(result)
 }

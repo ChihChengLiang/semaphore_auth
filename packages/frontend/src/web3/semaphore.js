@@ -6,7 +6,7 @@ import {
   stringifyBigInts
 } from 'libsemaphore'
 
-import { SEMAPHORE_TREE_DEPTH } from 'semaphore-auth-contracts/constants'
+import { SEMAPHORE_TREE_DEPTH } from '@hojicha/contracts/constants'
 
 const genAuth = async (
   externalNullifierStr,
