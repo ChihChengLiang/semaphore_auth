@@ -1,4 +1,4 @@
-const { deployContracts } = require('../lib/deploy')
+const { deployContracts } = require('../src/deploy')
 const ethers = require('ethers')
 
 async function main () {

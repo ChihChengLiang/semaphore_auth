@@ -1,5 +1,5 @@
 {
-  "name": "semaphore-auth-contracts",
+  "name": "@hojicha/contracts",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -17,13 +17,12 @@
     "ava": "^3.4.0",
     "circomlib": "https://github.com/kobigurk/circomlib.git#347822604996bf25f659f96ee0f02810a1f71bb0",
     "ganache-cli": "^6.9.1",
+    "libsemaphore": "^1.0.14",
+    "node-fetch": "^2.6.0",
+    "solc": "^0.6.4",
     "yarn": "^1.22.0"
   },
-  "dependencies": {
-    "libsemaphore": "1.0.14",
-    "node-fetch": "^2.6.0",
-    "solc": "^0.6.3"
-  },
+  "dependencies": {},
   "ava": {
     "files": [
       "test/*"

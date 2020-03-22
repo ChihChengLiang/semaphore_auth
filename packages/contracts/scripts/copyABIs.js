@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { compileContracts } = require('../lib/compile')
+const { compileContracts } = require('../src/compile')
 
 const main = async () => {
   const solcs = await compileContracts()
@@ -13,7 +13,7 @@ const main = async () => {
 }
 
 const saveABI = (contractName, abi) => {
-  const toPath = path.join(__dirname, `../abis/${contractName}.json`)
+  const toPath = path.join(__dirname, `../../common/abis/${contractName}.json`)
 
   fs.writeFileSync(
     toPath,
