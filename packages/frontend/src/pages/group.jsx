@@ -73,7 +73,16 @@ const Group = () => {
 
   const _register = async () => {
     const identityCommitment = genIdentityCommitment(retrieveId())
-    const tx = await register(contract, identityCommitment)
+    let tx
+    try {
+      tx = await register(contract, identityCommitment)
+    } catch (err) {
+      addToast(`Registration failed: ${err.error.messgae}`, {
+        appearance: 'error'
+      })
+      return
+    }
+
     addToast(`Registration transaction sent! Transaction ID: ${tx.hash}`, {
       appearance: 'info'
     })
