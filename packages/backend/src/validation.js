@@ -1,8 +1,6 @@
-const fs = require('fs')
 const snarkjs = require('snarkjs')
 
-const { VERIFYING_KEY_PATH } = require('semaphore-auth-contracts/constants')
-const { semaphoreContract } = require('semaphore-auth-contracts/src/contracts')
+const { verificationKey, SemaphoreABI } = require('@hojicha/common')
 
 const ethers = require('ethers')
 
@@ -10,7 +8,7 @@ const {
   genExternalNullifier,
   genSignalHash,
   stringifyBigInts,
-  parseVerifyingKeyJson,
+  unstringifyBigInts,
   verifyProof
 } = require('libsemaphore')
 
@@ -48,18 +46,18 @@ async function validateNullifierNotSeen (nullifierHash) {
 }
 async function validateInRootHistory (root) {
   const provider = new ethers.providers.JsonRpcProvider()
-  const semaphore = semaphoreContract(provider, configs.SEMAPHORE_ADDRESS)
-
-  const isInRootHistory = await semaphore.rootHistory(
-    stringifyBigInts(root)
+  const semaphore = new ethers.Contract(
+    configs.SEMAPHORE_ADDRESS,
+    SemaphoreABI,
+    provider
   )
+
+  const isInRootHistory = await semaphore.rootHistory(stringifyBigInts(root))
   if (!isInRootHistory) throw Error(`Root (${root.toString()}) not in history`)
 }
 
 async function validateProof (proof, publicSignals) {
-  const verifyingKey = parseVerifyingKeyJson(
-    fs.readFileSync(VERIFYING_KEY_PATH).toString()
-  )
+  const verifyingKey = unstringifyBigInts(verificationKey)
   const isValid = verifyProof(verifyingKey, proof, publicSignals)
   if (!isValid) throw Error('Invalid Proof')
 }

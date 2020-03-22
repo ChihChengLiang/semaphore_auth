@@ -12,7 +12,4 @@ module.exports = {
   PROVING_KEY_URL:
     'https://dl.dropboxusercontent.com/s/qjlu6v125g7jkcq/proving_key.bin?dl=1',
   PROVING_KEY_CACHE_PATH: path.join(__dirname, './cache/proving_key.bin'),
-  // verification_key.json is downloaded from
-  // https://dl.dropboxusercontent.com/s/rwjwu31c7pzhsth/verification_key.json?dl=1
-  VERIFYING_KEY_PATH: path.join(__dirname, './assets/verification_key.json')
 }
