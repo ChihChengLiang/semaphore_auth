@@ -1,7 +1,6 @@
 {
   "name": "root",
   "private": true,
-  "npmClient": "yarn",
   "scripts": {
     "bootstrap": "lerna bootstrap"
   },
