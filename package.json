@@ -6,6 +6,7 @@
     "bootstrap": "lerna bootstrap"
   },
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "lerna": "^3.20.2",
+    "yarn": "^1.22.4"
   }
 }
