@@ -1,0 +1,2 @@
+CREATE DATABASE oneofus;
+GRANT ALL PRIVILEGES ON DATABASE oneofus TO postgres; 

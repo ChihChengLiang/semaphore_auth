@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+  hojicha-db:
+    container_name: hojicha-db
+    build:
+      context: ../packages/backend/db
+    ports:
+      - '5002:5432'
+    expose:
+      - '5432'
+    networks:
+      - 'hojicha-net'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - NODE_ENV=gorli
+
+  hojicha-backend:
+    container_name: hojicha-backend
+    depends_on:
+      - 'hojicha-db'
+    build:
+      context: ../packages/backend
+    ports:
+      - '3000:3000'
+    expose:
+      - '3000'
+    networks:
+      - 'hojicha-net'
+    environment:
+      - NODE_ENV=kovan
+
+  hojicha-frontend:
+    container_name: hojicha-frontend
+    depends_on:
+      - 'hojicha-backend'
+    build:
+      context: ../packages/frontend
+    ports:
+      - '80:8001'
+    networks:
+      - 'hojicha-net'
+    environment:
+      - NODE_ENV=gorli
+
+networks:
+  hojicha-net:
+
+volumes:
+  db-data:

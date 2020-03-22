@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hojicha/common": "file:../common",
-    "@hojicha/config": "file:../config",
+    "@hojicha/common": "^0.0.1",
+    "@hojicha/config": "^0.0.1",
     "ethers": "^4.0.45",
     "express": "^4.17.1",
     "knex": "^0.20.10",
@@ -22,7 +22,7 @@
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
-    "@hojicha/contracts": "file:../contracts/",
+    "@hojicha/contracts": "^0.0.1",
     "ava": "^3.4.0",
     "cors": "^2.8.5",
     "nodemon": "^2.0.2",
