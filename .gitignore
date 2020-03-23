@@ -6,3 +6,4 @@ mydb.sqlite
 packages/config/*.yaml
 packages/frontend/src/exported-config.json
 *.log
+goerli.json
