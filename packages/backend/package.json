@@ -16,6 +16,7 @@
     "@hojicha/config": "^0.0.1",
     "ethers": "^4.0.45",
     "express": "^4.17.1",
+    "helmet": "^3.21.3",
     "knex": "^0.20.10",
     "libsemaphore": "1.0.14",
     "objection": "^2.1.3",

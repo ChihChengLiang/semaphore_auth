@@ -4,6 +4,7 @@ const { groups } = require('./groups')
 const Knex = require('knex')
 const configs = require('./configs')
 const { Model } = require('objection')
+const helmet = require('helmet')
 
 const bindDb = async () => {
   const knex = Knex(configs.db)
@@ -27,6 +28,7 @@ const naiveErrorHandler = (err, req, res, next) => {
 
 const createApp = () => {
   const app = express()
+  app.use(helmet())
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
 
