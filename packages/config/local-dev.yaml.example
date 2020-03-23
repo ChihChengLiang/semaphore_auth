@@ -3,7 +3,7 @@ env: 'local'
 
 frontend:
   supportedNetworkName: 'local'
-  supportedNetwork: 4
+  supportedNetworks: 1337 # Don't change 1337 for local environment. Not configurable in ganache-cli
 
 backend:
   serverName: 'hojicha'

@@ -10,10 +10,7 @@ const getLibrary = provider => {
 }
 
 const MetaMask = new InjectedConnector({
-  supportedChainIds: [
-    1337, // for ganache local dev to work
-    supportedNetwork
-  ]
+  supportedChainIds: [supportedNetwork]
 })
 
 const Activation = () => {
