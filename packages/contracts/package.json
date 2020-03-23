@@ -11,8 +11,6 @@
     "copyABIs": "node ./scripts/copyABIs.js",
     "ganache": "ganache-cli -a 10 -m='candy maple cake sugar pudding cream honey rich smooth crumble sweet treat' --gasLimit=8800000 --port 8545 -i 4"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "ava": "^3.4.0",
     "ganache-cli": "^6.9.1",

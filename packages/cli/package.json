@@ -1,16 +1,14 @@
 {
-  "name": "semaphore-auth-cli",
-  "version": "1.0.0",
+  "name": "@hojicha/cli",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "zkchan": "./index.js"
+    "hojicha": "./index.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "configstore": "^5.0.1",
     "dotenv": "^8.2.0",

@@ -1,6 +1,6 @@
 {
   "name": "@hojicha/backend",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,6 @@
     "test": "ava --timeout=1m",
     "migrate": "npx knex migrate:latest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@hojicha/common": "^0.0.1",
     "@hojicha/config": "^0.0.1",
