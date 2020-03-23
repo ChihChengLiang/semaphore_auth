@@ -45,7 +45,7 @@ async function validateNullifierNotSeen (nullifierHash) {
   }
 }
 async function validateInRootHistory (root) {
-  const provider = new ethers.providers.JsonRpcProvider()
+  const provider = new ethers.providers.JsonRpcProvider(configs.providerUrl)
   const semaphore = new ethers.Contract(
     configs.SEMAPHORE_ADDRESS,
     SemaphoreABI,

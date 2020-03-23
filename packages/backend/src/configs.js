@@ -5,5 +5,6 @@ module.exports = {
   NETWORK: config.chain.network || 'localhost',
   PROOF_OF_BURN_ADDRESS: config.chain.contracts.proofOfBurn,
   SEMAPHORE_ADDRESS: config.chain.contracts.semaphore,
-  db: config.backend.db
+  db: config.backend.db,
+  providerUrl: config.chain.url
 }
