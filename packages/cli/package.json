@@ -9,8 +9,6 @@
   "bin": {
     "hojicha": "./index.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "configstore": "^5.0.1",
     "dotenv": "^8.2.0",
