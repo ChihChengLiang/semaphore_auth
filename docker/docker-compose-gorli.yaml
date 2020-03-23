@@ -12,8 +12,6 @@ services:
       - 'hojicha-net'
     volumes:
       - db-data:/var/lib/postgresql/data
-    environment:
-      - NODE_ENV=gorli
 
   hojicha-backend:
     container_name: hojicha-backend
@@ -22,13 +20,14 @@ services:
     build:
       context: ../packages/backend
     ports:
-      - '3000:3000'
+      - '3000:5566'
     expose:
       - '3000'
     networks:
       - 'hojicha-net'
     environment:
-      - NODE_ENV=kovan
+      - NODE_ENV=production
+      - NODE_CONFIG_ENV=gorli
 
   hojicha-frontend:
     container_name: hojicha-frontend
@@ -37,11 +36,9 @@ services:
     build:
       context: ../packages/frontend
     ports:
-      - '80:8001'
+      - '5566:8001'
     networks:
       - 'hojicha-net'
-    environment:
-      - NODE_ENV=gorli
 
 networks:
   hojicha-net:

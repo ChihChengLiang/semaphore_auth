@@ -10,10 +10,10 @@ const bindDb = async () => {
   Model.knex(knex)
 
   // Wait for the DB to be active
-  const r = await knex.raw('select 1+1 as result')
-  if (r[0].result !== 2) {
-    throw Error('Cannot connect to db')
-  }
+  await knex.raw('select 1+1 as result').catch(err => {
+    console.error(err)
+    process.exit(1)
+  })
 
   return knex
 }
