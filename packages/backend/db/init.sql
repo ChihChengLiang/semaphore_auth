@@ -1,0 +1,2 @@
+CREATE DATABASE hojicha;
+GRANT ALL PRIVILEGES ON DATABASE hojicha TO postgres;

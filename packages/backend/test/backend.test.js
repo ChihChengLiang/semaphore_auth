@@ -1,16 +1,16 @@
 const request = require('supertest')
-const app = require('../src/app')
-const { deployContracts } = require('semaphore-auth-contracts/lib/deploy')
+const { createApp, bindDb } = require('../src/app')
+const { deployContracts } = require('@hojicha/contracts/src/deploy')
 const {
   REGISTRATION_FEE,
   SEMAPHORE_TREE_DEPTH,
   CIRCUIT_CACHE_PATH,
-  PROVING_KEY_CACHE_PATH,
-  VERIFYING_KEY_PATH
-} = require('semaphore-auth-contracts/constants')
+  PROVING_KEY_CACHE_PATH
+} = require('@hojicha/contracts/constants')
 const {
-  EpochbasedExternalNullifier
-} = require('semaphore-auth-contracts/lib/externalNullifier')
+  EpochbasedExternalNullifier,
+  verificationKey
+} = require('@hojicha/common')
 const fs = require('fs')
 const libsemaphore = require('libsemaphore')
 const ethers = require('ethers')
@@ -19,6 +19,9 @@ const test = require('ava')
 const configs = require('../src/configs')
 
 test('should post a new post', async t => {
+  const app = createApp()
+  await bindDb()
+
   const registrationFee = REGISTRATION_FEE
   const contracts = await deployContracts({ registrationFee })
 
@@ -72,9 +75,7 @@ test('should post a new post', async t => {
   const proof = await libsemaphore.genProof(witness, provingKey)
   const publicSignals = libsemaphore.genPublicSignals(witness, circuit)
 
-  const verifyingKey = libsemaphore.parseVerifyingKeyJson(
-    fs.readFileSync(VERIFYING_KEY_PATH).toString()
-  )
+  const verifyingKey = libsemaphore.unstringifyBigInts(verificationKey)
 
   t.true(libsemaphore.verifyProof(verifyingKey, proof, publicSignals))
   console.log('Requesting')

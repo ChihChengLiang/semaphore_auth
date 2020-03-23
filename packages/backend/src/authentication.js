@@ -6,9 +6,7 @@ const {
   validateProof
 } = require('./validation')
 
-const {
-  EpochbasedExternalNullifier
-} = require('semaphore-auth-contracts/lib/externalNullifier')
+const { EpochbasedExternalNullifier } = require('@hojicha/common')
 
 const { unstringifyBigInts } = require('libsemaphore')
 

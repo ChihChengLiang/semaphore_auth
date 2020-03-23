@@ -1,0 +1,20 @@
+---
+env: 'test'
+
+frontend:
+  supportedNetworkName: 'local'
+  supportedNetwork: 4
+
+backend:
+  serverName: 'hojicha'
+  network: 'localhost'
+  db:
+    client: 'sqlite3'
+    connection:
+      filename: 'mydb.sqlite'
+
+chain:
+  contracts:
+    # leave addresses blank, we deploy fresh contracts in tests
+    proofOfBurn:
+    semaphore:

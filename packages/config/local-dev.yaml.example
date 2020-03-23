@@ -1,0 +1,24 @@
+---
+env: 'local'
+
+frontend:
+  supportedNetworkName: 'local'
+  supportedNetworks: 1337 # Don't change 1337 for local environment. Not configurable in ganache-cli
+
+backend:
+  serverName: 'hojicha'
+  network: 'localhost'
+  db:
+    client: 'sqlite3'
+    connection:
+      filename: 'mydb.sqlite'
+
+chain:
+  url: 'http://localhost:8545'
+  contracts:
+    proofOfBurn: '0x345cA3e014Aaf5dcA488057592ee47305D9B3e10'
+    semaphore: '0xF12b5dd4EAD5F743C6BaA640B0216200e89B60Da'
+
+snarks:
+  circuitUrl: 'https://dl.dropboxusercontent.com/s/3gzxjibqgb6ke13/circuit.json?dl=1'
+  provingKeyUrl: 'https://dl.dropboxusercontent.com/s/qjlu6v125g7jkcq/proving_key.bin?dl=1'

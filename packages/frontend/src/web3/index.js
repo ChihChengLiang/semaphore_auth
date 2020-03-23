@@ -1,17 +1,31 @@
 import React, { useState } from 'react'
-import { useEffect } from 'react'
-import { Connectors, useWeb3Context } from 'web3-react'
-const { InjectedConnector } = Connectors
+import { supportedNetwork } from '../configs'
+import { InjectedConnector } from '@web3-react/injected-connector'
+import { useWeb3React } from '@web3-react/core'
+import { ethers } from 'ethers'
 
-const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
+const getLibrary = provider => {
+  const library = new ethers.providers.Web3Provider(provider)
+  return library
+}
+
+const MetaMask = new InjectedConnector({
+  supportedChainIds: [supportedNetwork]
+})
 
 const Activation = () => {
-  const context = useWeb3Context()
-  const connectMetaMask = () => {
-    context.setFirstValidConnector(['MetaMask'])
+  const { activate, active, account } = useWeb3React()
+  const [error, setError] = useState(null)
+
+  const connectMetaMask = async () => {
+    try {
+      await activate(MetaMask, undefined, true)
+    } catch (err) {
+      setError(err)
+    }
   }
 
-  if (!context.active && !context.error) {
+  if (!active && !error) {
     return (
       <>
         <p>
@@ -23,18 +37,18 @@ const Activation = () => {
         </button>
       </>
     )
-  } else if (context.error) {
+  } else if (error) {
     //error
-    return <p>Error {context.error.toString()}</p>
+    return <p>Error {error.toString()}</p>
   } else {
     // success
     return (
       <>
         <h1>Loading sucess</h1>
-        <p>{context.account}</p>
+        <p>{account}</p>
       </>
     )
   }
 }
 
-export { Activation, MetaMask }
+export { Activation, MetaMask, getLibrary }

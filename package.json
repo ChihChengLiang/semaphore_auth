@@ -1,15 +1,11 @@
 {
   "name": "root",
   "private": true,
-  "npmClient": "yarn",
-  "useWorkspaces": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "bootstrap": "lerna bootstrap"
+    "bootstrap": "lerna bootstrap --force-local"
   },
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "lerna": "^3.20.2",
+    "yarn": "^1.22.4"
   }
 }

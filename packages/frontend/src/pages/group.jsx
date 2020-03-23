@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useWeb3Context } from 'web3-react'
-
+import { useWeb3React } from '@web3-react/core'
 import { NewPost, Posts } from './posts'
 import DownloadSnarks from '../components/download_snarks'
 import { fetchGetRegistrationInfo } from '../utils/fetch'
@@ -11,13 +10,13 @@ import { CreateIdentity } from './identity'
 import { hasId, retrieveId } from '../storage'
 import { Activation } from '../web3'
 import { Registration } from '../pages/identity'
-import ProofOfBurnABI from 'semaphore-auth-contracts/abis/ProofOfBurn.json'
+import { ProofOfBurnABI } from '@hojicha/common'
 import { ethers } from 'ethers'
 import { genIdentityCommitment } from 'libsemaphore'
 import { register } from '../web3/registration'
 
 const Group = () => {
-  const context = useWeb3Context()
+  const { library, active } = useWeb3React()
   const { addToast } = useToasts()
 
   const [idExists, setIdExists] = useState(hasId())
@@ -44,14 +43,12 @@ const Group = () => {
         console.log(registrationInfo)
         if (!didCancel) setRegistrationInfo(registrationInfo)
       }
-      if (context.active && registrationInfo.registrationAddress !== null) {
-        const provider = new ethers.providers.Web3Provider(
-          context.library.provider
-        )
+      if (active && registrationInfo.registrationAddress !== null) {
+        const signer = library.getSigner()
         const ProofOfBurn = new ethers.Contract(
           registrationInfo.registrationAddress,
           ProofOfBurnABI,
-          provider.getSigner()
+          signer
         )
         if (!didCancel) setContract(ProofOfBurn)
         if (await checkRegistered(ProofOfBurn)) {
@@ -64,7 +61,7 @@ const Group = () => {
     return () => {
       didCancel = true
     }
-  }, [context.active, registrationInfo.registrationAddress])
+  }, [active, registrationInfo.registrationAddress])
 
   const onIdCreated = () => {
     addToast('Identity created Successfully!', { appearance: 'success' })
@@ -73,7 +70,16 @@ const Group = () => {
 
   const _register = async () => {
     const identityCommitment = genIdentityCommitment(retrieveId())
-    const tx = await register(contract, identityCommitment)
+    let tx
+    try {
+      tx = await register(contract, identityCommitment)
+    } catch (err) {
+      addToast(`Registration failed: ${err.error.messgae}`, {
+        appearance: 'error'
+      })
+      return
+    }
+
     addToast(`Registration transaction sent! Transaction ID: ${tx.hash}`, {
       appearance: 'info'
     })
@@ -81,7 +87,7 @@ const Group = () => {
     const receipt = await tx.wait()
     if (receipt.status === 1) {
       addToast('Registration Success!', { appearance: 'success' })
-      onRegistered()
+      setIsRegistered(true)
     } else {
       addToast(`Registration failed`, {
         appearance: 'error'
@@ -103,7 +109,7 @@ const Group = () => {
   let onboarding = null
   if (!idExists) {
     onboarding = <CreateIdentity onCreated={onIdCreated} />
-  } else if (!context.active) {
+  } else if (!active) {
     onboarding = <Activation />
   } else if (contract !== null && !isRegistered) {
     onboarding = <Registration contract={contract} register={_register} />

@@ -1,27 +1,30 @@
 {
-  "name": "semaphore-auth-backend",
+  "name": "@hojicha/backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "ava --timeout=1m"
+    "test": "ava --timeout=1m",
+    "migrate": "npx knex migrate:latest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "@hojicha/common": "^0.0.1",
+    "@hojicha/config": "^0.0.1",
     "ethers": "^4.0.45",
     "express": "^4.17.1",
+    "helmet": "^3.21.3",
     "knex": "^0.20.10",
     "libsemaphore": "1.0.14",
-    "nodemon": "^2.0.2",
     "objection": "^2.1.3",
-    "semaphore-auth-contracts": "file:../contracts",
+    "pg": "^7.18.2",
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
+    "@hojicha/contracts": "^0.0.1",
     "ava": "^3.4.0",
     "cors": "^2.8.5",
     "nodemon": "^2.0.2",

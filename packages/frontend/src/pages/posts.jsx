@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import genAuth from '../web3/semaphore'
-import { EpochbasedExternalNullifier } from 'semaphore-auth-contracts/lib/externalNullifier'
+import { EpochbasedExternalNullifier } from '@hojicha/common'
 import { retrieveId } from '../storage'
 import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'

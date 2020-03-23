@@ -1,7 +1,7 @@
-require('dotenv').config()
+import config from './exported-config.json'
 
-module.exports = {
-  PROOF_OF_BURN_ADDRESS: process.env.PROOF_OF_BURN_ADDRESS,
-  SEMAPHORE_ADDRESS: process.env.SEMAPHORE_ADDRESS,
-  BACKEND_URL: process.env.BACKEND_URL
-}
+export const supportedNetwork = config.frontend.supportedNetwork
+
+export const circuitUrl = config.snarks.circuitUrl
+
+export const provingKeyUrl = config.snarks.provingKeyUrl
