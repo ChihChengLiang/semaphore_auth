@@ -1,0 +1,27 @@
+---
+env: 'goerli'
+
+frontend:
+  supportedNetworkName: 'goerli'
+  supportedNetwork: 5
+
+backend:
+  serverName: 'hojicha'
+  network: 'goerli'
+  db:
+    client: 'pg'
+    connection:
+      host: 'hojicha-db'
+      port: 5432
+      user: 'postgres'
+      database: 'hojicha'
+
+chain:
+  url: 'https://goerli.infura.io/v3/be5a8f1b309e4831bbc4205d70d0e285'
+  contracts:
+    proofOfBurn: '0xa679454e43c84Cb449aa3470F58D2Ab333D0F09a'
+    semaphore: '0x04a5a68a801A3a9577Cac8712D1D96e76C4E4A20'
+
+snarks:
+  circuitUrl: 'https://dl.dropboxusercontent.com/s/3gzxjibqgb6ke13/circuit.json?dl=1'
+  provingKeyUrl: 'https://dl.dropboxusercontent.com/s/qjlu6v125g7jkcq/proving_key.bin?dl=1'
