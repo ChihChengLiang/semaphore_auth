@@ -36,7 +36,7 @@ services:
     build:
       context: ../packages/frontend
     ports:
-      - '5566:8001'
+      - '80:8001'
     networks:
       - 'hojicha-net'
 

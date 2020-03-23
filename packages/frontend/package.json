@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "build": "parcel build index.html --no-autoinstall",
-    "start": "node server.js",
+    "build": "npm run configure && parcel build index.html --no-autoinstall",
+    "start": "npm run configure && node server.js",
     "configure": "node ../config/export-config.js > ./src/exported-config.json"
   },
   "author": "",

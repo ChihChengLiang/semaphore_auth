@@ -2,8 +2,8 @@ FROM node:12.14.1-stretch AS hojicha-build
 
 WORKDIR /hojicha
 
-ARG NODE_ENV
-ENV NODE_ENV=$NODE_ENV
+ARG NODE_CONFIG_ENV
+ENV NODE_CONFIG_ENV=$NODE_CONFIG_ENV
 
 COPY package.json lerna.json /hojicha/
 
