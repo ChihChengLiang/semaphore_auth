@@ -1,6 +1,6 @@
 {
   "name": "@hojicha/backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "migrate": "npx knex migrate:latest"
   },
   "dependencies": {
-    "@hojicha/common": "^0.0.1",
-    "@hojicha/config": "^0.0.1",
+    "@hojicha/common": "^0.0.2",
+    "@hojicha/config": "^0.0.2",
     "ethers": "^4.0.45",
     "express": "^4.17.1",
     "helmet": "^3.21.3",
@@ -21,7 +21,7 @@
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
-    "@hojicha/contracts": "^0.0.1",
+    "@hojicha/contracts": "^0.0.2",
     "ava": "^3.4.0",
     "cors": "^2.8.5",
     "nodemon": "^2.0.2",
