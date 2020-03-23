@@ -5,7 +5,7 @@ exports.up = function (knex) {
     table.string('nullifierHash')
     table.string('signalHash')
     table.string('externalNullifierStr')
-    table.string('proof')
+    table.string('proof', 1000) // string length of proof is around 700
 
     table
       .dateTime('createdAt')
