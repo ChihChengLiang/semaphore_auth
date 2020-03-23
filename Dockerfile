@@ -18,11 +18,11 @@ RUN mkdir contracts && \
     mkdir backend && \
     mkdir frontend
 
-COPY packages/contracts/package.json packages/contracts/yarn.lock contracts/
-COPY packages/common/package.json packages/common/yarn.lock common/
-COPY packages/config/package.json packages/config/yarn.lock config/
-COPY packages/backend/package.json packages/backend/yarn.lock backend/
-COPY packages/frontend/package.json packages/frontend/yarn.lock frontend/
+COPY packages/contracts/package.json contracts/
+COPY packages/common/package.json common/
+COPY packages/config/package.json config/
+COPY packages/backend/package.json backend/
+COPY packages/frontend/package.json frontend/
 
 WORKDIR /hojicha
 

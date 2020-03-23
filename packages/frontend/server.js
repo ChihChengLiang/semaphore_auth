@@ -27,6 +27,9 @@ app.use(
   })
 )
 
+app.use('/circuit', express.static('../contracts/cache/circuit.json'))
+app.use('/provingKey', express.static('../contracts/cache/proving_key.bin'))
+
 const bundler = new Bundler(entryFile, parcelOptions)
 bundler.on('buildEnd', () => {
   console.log('Build completed!')

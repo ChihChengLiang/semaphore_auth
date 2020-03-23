@@ -46,15 +46,21 @@ const requireSemaphoreAuth = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-  const semaphoreLog = await SemaphoreLog.query().insert({
+
+  const data = {
     root: root.toString(),
     nullifierHash: nullifierHash.toString(),
     externalNullifierStr: expectedExternalNullifierStr,
     signalHash: signalHash.toString(),
     proof: rawProof
-  })
+  }
 
-  req.semaphoreLogId = semaphoreLog.id
+  try {
+    const semaphoreLog = await SemaphoreLog.query().insert(data)
+    req.semaphoreLogId = semaphoreLog.id
+  } catch (err) {
+    next(err)
+  }
 
   next()
 }
