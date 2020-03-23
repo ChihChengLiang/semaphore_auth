@@ -27,7 +27,7 @@ services:
       - 'hojicha-net'
     environment:
       - NODE_ENV=production
-      - NODE_CONFIG_ENV=gorli
+      - NODE_CONFIG_ENV=goerli
 
   hojicha-frontend:
     container_name: hojicha-frontend
