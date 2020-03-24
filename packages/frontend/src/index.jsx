@@ -12,8 +12,10 @@ import './custom.scss'
 
 import { ToastProvider } from 'react-toast-notifications'
 import Group from './pages/group'
+import About from './pages/about'
 
 const links = [
+  { path: '/about', title: 'About', component: <About /> },
   { path: '/', title: 'Posts', component: <Group /> },
   {
     path: '/identity',

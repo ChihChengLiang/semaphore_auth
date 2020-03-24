@@ -1,45 +1,35 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { ethers } from 'ethers'
+import { useProofOfBurnData } from '../hooks'
 
-// @param contract is an ethers.Contract instance
-const ProofOfBurn = ({ contract }) => {
-  const [data, setData] = useState({
-    address: null,
-    registrationFee: null,
-    commitments: null
-  })
+const ProofOfBurn = () => {
+  const data = useProofOfBurnData()
 
-  useEffect(() => {
-    let didCancel = false
-    const fetchContractData = async () => {
-      const address = contract.address
-      const registrationFee = (await contract.registration_fee()).toString()
-      const commitments = (await contract.getIdentityCommitments()).length
-      if (!didCancel) setData({ address, registrationFee, commitments })
-    }
-    fetchContractData()
-    return () => {
-      didCancel = true
-    }
-  }, [])
-
-  return data.address ? (
-    <div className='media'>
-      <div className='media-content'>
-        <p>
-          Address: <small>{data.address}</small>
-        </p>
-        <p>
-          Registration Fee:{' '}
-          <strong>{ethers.utils.formatEther(data.registrationFee)} ETH</strong>
-        </p>
-        <p>
-          <strong>{data.commitments}</strong> Members in the group
-        </p>
+  return data.isLoaded ? (
+    <div className='box has-background-light'>
+      <div className='content'>
+        <strong>Group managed by contract</strong> <small>{data.address}</small>
       </div>
+
+      <nav className='level'>
+        <div className='level-item has-text-centered'>
+          <div>
+            <p className='heading'>Members in the group</p>
+            <p className='title is-4'>{data.commitments}</p>
+          </div>
+        </div>
+        <div className='level-item has-text-centered'>
+          <div>
+            <p className='heading'>Registration Fee</p>
+            <p className='title is-4'>
+              {ethers.utils.formatEther(data.registrationFee)} ETH
+            </p>
+          </div>
+        </div>
+      </nav>
     </div>
   ) : (
-    <p>Loading...</p>
+    <p>Waiting contract data...</p>
   )
 }
 

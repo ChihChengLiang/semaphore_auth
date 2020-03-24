@@ -1,9 +1,9 @@
 import { genIdentity, serialiseIdentity } from 'libsemaphore'
 import { hasId, retrieveId, storeId } from '../storage'
-import React, { useState, useEffect } from 'react'
-import { checkRegistered } from '../web3/registration'
+import React from 'react'
 
 import { ProofOfBurn } from '../components/contracts'
+import { useIsRegistered } from '../hooks'
 
 const Identity = ({ identity }) => {
   return (
@@ -46,21 +46,15 @@ const CreateIdentity = ({ onCreated }) => {
   )
 }
 
-const Registration = ({ contract, register }) => {
-  const [isRegistered, setIsRegistered] = useState(false)
+const Registration = ({ register }) => {
+  const isRegistered = useIsRegistered()
 
-  useEffect(() => {
-    const _checkRegistered = async () => {
-      setIsRegistered(await checkRegistered(contract))
-    }
-    _checkRegistered()
-  }, [isRegistered])
   return (
     <div className='content'>
       <h3>Register your identity to join a Semaphore group</h3>
       <div className='card'>
         <div className='card-content'>
-          <ProofOfBurn contract={contract} />
+          <ProofOfBurn />
           {isRegistered ? (
             <p>You are registered</p>
           ) : (

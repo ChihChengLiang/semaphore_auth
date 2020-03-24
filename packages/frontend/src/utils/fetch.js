@@ -9,8 +9,6 @@ const _fetch = async (path, options) => {
 
 const fetchGetPosts = async page => await _fetch(`posts/page/${page}`)
 
-const fetchGetRegistrationInfo = async () => await _fetch('info/')
-
 const fetchPostNewPost = async (postBody, proof, publicSignals) => {
   const options = {
     method: 'POST',
@@ -49,10 +47,4 @@ const fetchProvingKey = async onProgress => {
   window.provingKey = new Uint8Array(result)
 }
 
-export {
-  fetchGetPosts,
-  fetchPostNewPost,
-  fetchGetRegistrationInfo,
-  fetchCircuit,
-  fetchProvingKey
-}
+export { fetchGetPosts, fetchPostNewPost, fetchCircuit, fetchProvingKey }
