@@ -3,6 +3,7 @@ import { supportedNetwork, supportedNetworkName } from '../configs'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
+import getErrorMessage from './error'
 
 const getLibrary = provider => {
   const library = new ethers.providers.Web3Provider(provider)
@@ -42,7 +43,7 @@ const Activation = () => {
     )
   } else if (error) {
     //error
-    return <p>Error {error.toString()}</p>
+    return <p className='has-text-danger'>{getErrorMessage(error)}</p>
   } else {
     // success
     return (
