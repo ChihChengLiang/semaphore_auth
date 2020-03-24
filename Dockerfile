@@ -12,13 +12,11 @@ RUN npm install --quiet && \
 
 WORKDIR /hojicha/packages
 
-RUN mkdir contracts && \
-    mkdir common && \
+RUN mkdir common && \
     mkdir config && \
     mkdir backend && \
     mkdir frontend
 
-COPY packages/contracts/package.json contracts/
 COPY packages/common/package.json common/
 COPY packages/config/package.json config/
 COPY packages/backend/package.json backend/
@@ -27,7 +25,7 @@ COPY packages/frontend/package.json frontend/
 WORKDIR /hojicha
 
 # First bootstrap we cache the external packages
-RUN npx lerna bootstrap --force-local --ignore @hojicha/*
+RUN npx lerna bootstrap --force-local
 
 WORKDIR /hojicha/packages
 
