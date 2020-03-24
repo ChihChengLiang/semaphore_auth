@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { supportedNetwork } from '../configs'
+import { supportedNetwork, supportedNetworkName } from '../configs'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
@@ -28,6 +28,9 @@ const Activation = () => {
   if (!active && !error) {
     return (
       <>
+        <p>
+          Supported Network: <strong>{supportedNetworkName}</strong>{' '}
+        </p>
         <p>
           Please connect to MetaMask, we are about to read/write some
           information on the contract.
