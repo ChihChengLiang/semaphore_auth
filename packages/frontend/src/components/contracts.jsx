@@ -1,29 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { ethers } from 'ethers'
+import { useProofOfBurnData } from '../hooks'
 
-// @param contract is an ethers.Contract instance
-const ProofOfBurn = ({ contract }) => {
-  const [data, setData] = useState({
-    address: null,
-    registrationFee: null,
-    commitments: null
-  })
+const ProofOfBurn = () => {
+  const data = useProofOfBurnData()
 
-  useEffect(() => {
-    let didCancel = false
-    const fetchContractData = async () => {
-      const address = contract.address
-      const registrationFee = (await contract.registration_fee()).toString()
-      const commitments = (await contract.getIdentityCommitments()).length
-      if (!didCancel) setData({ address, registrationFee, commitments })
-    }
-    fetchContractData()
-    return () => {
-      didCancel = true
-    }
-  }, [])
-
-  return data.address ? (
+  return data.isLoaded ? (
     <div className='media'>
       <div className='media-content'>
         <p>
@@ -39,7 +21,7 @@ const ProofOfBurn = ({ contract }) => {
       </div>
     </div>
   ) : (
-    <p>Loading...</p>
+    <p>Waiting contract data...</p>
   )
 }
 

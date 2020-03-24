@@ -7,6 +7,7 @@ import { ethers } from 'ethers'
 import { fetchGetPosts, fetchPostNewPost } from '../utils/fetch'
 import { useToasts } from 'react-toast-notifications'
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { useProofOfBurn } from '../hooks'
 
 const newPostENGen = new EpochbasedExternalNullifier(
   '/posts/new',
@@ -94,7 +95,8 @@ const Post = ({ post, isNew }) => {
   )
 }
 
-const NewPost = ({ contract, onPublish }) => {
+const NewPost = ({ onPublish }) => {
+  const contract = useProofOfBurn()
   const [postBody, setPostBody] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -120,6 +122,7 @@ const NewPost = ({ contract, onPublish }) => {
     const identity = retrieveId()
     const externalNullifierStr = newPostENGen.getString()
 
+    // Assume by the time we call this function the contract is not null already
     const { proof, publicSignals } = await genAuth(
       externalNullifierStr,
       signalStr,
