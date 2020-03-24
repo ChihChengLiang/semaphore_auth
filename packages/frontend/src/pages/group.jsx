@@ -74,7 +74,7 @@ const Group = () => {
     try {
       tx = await register(contract, identityCommitment)
     } catch (err) {
-      addToast(`Registration failed: ${err.error.messgae}`, {
+      addToast(`Registration failed: ${err.message}`, {
         appearance: 'error'
       })
       return
