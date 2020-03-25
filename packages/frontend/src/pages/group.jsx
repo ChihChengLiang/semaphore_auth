@@ -23,6 +23,7 @@ const Group = () => {
   const contract = useProofOfBurn()
   const [newPostId, setNewPostId] = useState(null)
   const isRegistered = useIsRegistered()
+  const forceRerender = useState()[1]
 
   const [snarksDownloaded, setSnarksDownloaded] = useState(
     window.circuit && window.provingKey
@@ -52,7 +53,7 @@ const Group = () => {
     const receipt = await tx.wait()
     if (receipt.status === 1) {
       addToast('Registration Success!', { appearance: 'success' })
-      setIsRegistered(true)
+      forceRerender()
     } else {
       addToast(`Registration failed`, {
         appearance: 'error'
