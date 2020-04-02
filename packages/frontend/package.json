@@ -1,6 +1,6 @@
 {
   "name": "@hojicha/frontend",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "scripts": {
     "build": "npm run configure && parcel build index.html --no-autoinstall",
@@ -20,7 +20,7 @@
     "sass": "^1.26.3"
   },
   "dependencies": {
-    "@hojicha/common": "^0.0.2",
+    "@hojicha/common": "^0.0.3",
     "@web3-react/core": "^6.0.7",
     "@web3-react/injected-connector": "^6.0.7",
     "bulma": "^0.8.0",
