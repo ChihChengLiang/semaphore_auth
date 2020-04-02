@@ -14,7 +14,7 @@
   "devDependencies": {
     "ava": "^3.4.0",
     "ganache-cli": "^6.9.1",
-    "libsemaphore": "^1.0.14",
+    "libsemaphore": "^1.0.15",
     "yarn": "^1.22.0"
   },
   "dependencies": {
