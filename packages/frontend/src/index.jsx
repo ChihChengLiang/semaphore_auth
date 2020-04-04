@@ -52,7 +52,7 @@ const RouteTabs = () => (
 const Layout = ({ children }) => (
   <section className='section'>
     <div className='columns'>
-      <div className='column is-half is-offset-one-quarter'>
+      <div className='column is-half-desktop is-offset-one-quarter-desktop'>
         <div className='box'>{children}</div>
       </div>
     </div>
