@@ -18,7 +18,12 @@ const About = () => {
       <h3>Learn more and contributing</h3>
       <p>
         Please visit the{' '}
-        <a src='https://github.com/ChihChengLiang/semaphore_auth'>Github</a>{' '}
+        <a
+          href='https://github.com/ChihChengLiang/semaphore_auth'
+          target='_blank'
+        >
+          Github
+        </a>{' '}
         page.
       </p>
     </div>
