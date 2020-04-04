@@ -14,6 +14,8 @@ import { ToastProvider } from 'react-toast-notifications'
 import Group from './pages/group'
 import About from './pages/about'
 
+import GithubCorner from './components/github.html'
+
 const links = [
   { path: '/about', title: 'About', component: <About /> },
   { path: '/', title: 'Posts', component: <Group /> },
@@ -52,10 +54,11 @@ const RouteTabs = () => (
 const Layout = ({ children }) => (
   <section className='section'>
     <div className='columns'>
-      <div className='column is-half is-offset-one-quarter'>
+      <div className='column is-half-desktop is-offset-one-quarter-desktop'>
         <div className='box'>{children}</div>
       </div>
     </div>
+    <div dangerouslySetInnerHTML={{ __html: GithubCorner }} />
   </section>
 )
 
