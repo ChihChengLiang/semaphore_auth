@@ -14,7 +14,7 @@ import { ToastProvider } from 'react-toast-notifications'
 import Group from './pages/group'
 import About from './pages/about'
 
-import GithubCorner from './components/github.html'
+//import GithubCorner from './components/github.html'
 
 const links = [
   { path: '/about', title: 'About', component: <About /> },
@@ -58,7 +58,6 @@ const Layout = ({ children }) => (
         <div className='box'>{children}</div>
       </div>
     </div>
-    <div dangerouslySetInnerHTML={{ __html: GithubCorner }} />
   </section>
 )
 
