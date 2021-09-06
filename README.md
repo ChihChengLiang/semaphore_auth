@@ -12,4 +12,6 @@ See [hojicha.art](https://hojicha.art) as an example of how it works.
 
 ```
 npm run bootstrap
+scripts/buildImagesGoerli.sh
+docker-compose -f docker/docker-compose-goerli.yaml up
 ```
